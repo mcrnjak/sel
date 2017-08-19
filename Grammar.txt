@@ -1,0 +1,26 @@
+expression  ->  boolOr;
+boolOr      ->  boolAnd (OR boolAnd)* ;
+boolAnd     ->  equal (AND equal)* ;
+equal       ->  compare ( (EQ | NE) compare)* ;
+compare     ->  addSub ( (GT | GTE | LT | LTE) addSub)* ;
+addSub      ->  mulDiv ( (PLUS | MINUS) mulDiv)* ;
+mulDiv      ->  unary ( (MUL | DIV) unary)* ;
+unary       ->  (NOT | MINUS)? primary ;
+primary     ->  STRING | NUMBER | 'true' | 'false' | 'null' | '(' expression ')' ;
+
+
+OR          ->  ('or' | '||') ;
+AND         ->  ('and' | '&&') ;
+EQ          ->  ('eq' | '==') ;
+NE          ->  ('ne' | '!=') ;
+GT          ->  ('gt' | '>') ;
+GTE         ->  ('gte' | '>=') ;
+LT          ->  ('lt' | '<') ;
+LTE         ->  ('lte' | '<=') ;
+PLUS        ->  '+' ;
+MINUS       ->  '-' ;
+MUL         ->  '*' ;
+DIV         ->  '/' ;
+NOT         ->  '!' ;
+STRING      ->  '((\\')|[^'])*?' ;
+NUMBER      ->  [0-9]+(\.[0-9]+)* ;
