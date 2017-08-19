@@ -1,6 +1,7 @@
 package com.milancrnjak.sel.parsetree.impl;
 
 import com.milancrnjak.sel.parsetree.ParseTreeNode;
+import com.milancrnjak.sel.parsetree.visitor.ParseTreeVisitor;
 import com.milancrnjak.sel.token.Token;
 
 /**
@@ -23,5 +24,10 @@ public class LiteralNode implements ParseTreeNode {
     @Override
     public String toString() {
         return token.getSequence();
+    }
+
+    @Override
+    public <T> T accept(ParseTreeVisitor<T> visitor) {
+        return visitor.visitLiteralNode(this);
     }
 }

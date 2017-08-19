@@ -1,6 +1,7 @@
 package com.milancrnjak.sel.parsetree.impl;
 
 import com.milancrnjak.sel.parsetree.ParseTreeNode;
+import com.milancrnjak.sel.parsetree.visitor.ParseTreeVisitor;
 
 /**
  * Represents an expression inside of parentheses.
@@ -22,5 +23,10 @@ public class ParenthesesNode implements ParseTreeNode {
     @Override
     public String toString() {
         return "(" + node.toString() + ")";
+    }
+
+    @Override
+    public <T> T accept(ParseTreeVisitor<T> visitor) {
+        return visitor.visitParenthesesNode(this);
     }
 }

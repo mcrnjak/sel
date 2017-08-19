@@ -5,6 +5,8 @@ import com.milancrnjak.sel.exception.TokenizerException;
 import com.milancrnjak.sel.parser.DefaultParser;
 import com.milancrnjak.sel.parser.Parser;
 import com.milancrnjak.sel.parsetree.ParseTreeNode;
+import com.milancrnjak.sel.parsetree.visitor.ParseTreeLispStringifier;
+import com.milancrnjak.sel.parsetree.visitor.ParseTreeVisitor;
 import com.milancrnjak.sel.token.Token;
 import com.milancrnjak.sel.tokenizer.RegexTokenizer;
 import com.milancrnjak.sel.tokenizer.Tokenizer;
@@ -14,14 +16,24 @@ import java.util.List;
 public class MainTest {
 
     public static void main(String[] args) {
-        String input = "(true and false) == 4 < 5";
+        String input = "(5 + -3) * -4";
 
-        Tokenizer tokenizer = new RegexTokenizer();
         try {
+            // tokenize the input
+            Tokenizer tokenizer = new RegexTokenizer();
             List<Token> tokens = tokenizer.tokenize(input);
+
+            // parse the tokens
             Parser parser = new DefaultParser();
             ParseTreeNode parseTree = parser.parse(tokens);
+
+            // parse tree to string
             System.out.println(parseTree);
+
+            // stringify as lisp structure
+            ParseTreeVisitor<String> stringifier = new ParseTreeLispStringifier();
+            System.out.println(stringifier.visit(parseTree));
+
         } catch (TokenizerException e) {
             System.err.println("Error in input at position [" + e.getPosition() + "] " + e.getMessage());
         } catch (ParserException e) {

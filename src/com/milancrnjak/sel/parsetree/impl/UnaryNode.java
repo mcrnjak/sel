@@ -1,6 +1,7 @@
 package com.milancrnjak.sel.parsetree.impl;
 
 import com.milancrnjak.sel.parsetree.ParseTreeNode;
+import com.milancrnjak.sel.parsetree.visitor.ParseTreeVisitor;
 import com.milancrnjak.sel.token.Token;
 
 /**
@@ -28,6 +29,11 @@ public class UnaryNode implements ParseTreeNode {
 
     @Override
     public String toString() {
-        return getOperator().getTokenType().toString() + node.toString();
+        return getOperator().getTokenType().toString() + " " + node.toString();
+    }
+
+    @Override
+    public <T> T accept(ParseTreeVisitor<T> visitor) {
+        return visitor.visitUnaryNode(this);
     }
 }

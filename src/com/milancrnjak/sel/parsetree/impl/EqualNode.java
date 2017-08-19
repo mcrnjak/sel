@@ -2,6 +2,7 @@ package com.milancrnjak.sel.parsetree.impl;
 
 import com.milancrnjak.sel.parsetree.BinaryNode;
 import com.milancrnjak.sel.parsetree.ParseTreeNode;
+import com.milancrnjak.sel.parsetree.visitor.ParseTreeVisitor;
 import com.milancrnjak.sel.token.Token;
 
 /**
@@ -13,5 +14,10 @@ public class EqualNode extends BinaryNode {
 
     public EqualNode(ParseTreeNode leftNode, ParseTreeNode rightNode, Token token) {
         super(leftNode, rightNode, token);
+    }
+
+    @Override
+    public <T> T accept(ParseTreeVisitor<T> visitor) {
+        return visitor.visitEqualNode(this);
     }
 }
