@@ -26,6 +26,7 @@ public enum TokenType {
     FALSE,
     NULL,
     STRING,
-    NUMBER
+    NUMBER,
+    END
 
 }
