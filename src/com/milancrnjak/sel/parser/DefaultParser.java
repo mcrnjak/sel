@@ -184,9 +184,56 @@ public class DefaultParser implements Parser {
             return new ParenthesesNode(node);
         }
 
+        if (match(FUNC)) {
+            return parseFunction();
+        }
+
         throw new ParserException("Unknown symbol detected", lookaheadToken());
     }
 
+    /**
+     * Parses the 'function' rule from the grammar.
+     *
+     * @return corresponding parse tree node.
+     */
+    protected ParseTreeNode parseFunction() {
+        Token funcId = currentToken();
+        consumeOrThrow(LEFT_PAREN, "Opening '(' expected after function name");
+        List<ParseTreeNode> funcArgs = parseFuncArgs();
+        consumeOrThrow(RIGHT_PAREN, "Closing ')' expected for function");
+        return new FunctionNode(funcId, funcArgs);
+    }
+
+    /**
+     * Parses the 'funcargs' rule from the grammar.
+     *
+     * @return List of parse tree nodes (each function argument is a node in the list).
+     */
+    protected List<ParseTreeNode> parseFuncArgs() {
+        List<ParseTreeNode> funcArgs = new LinkedList<>();
+
+        if (lookaheadToken().getTokenType() != RIGHT_PAREN) {
+            ParseTreeNode arg = parseExpression();
+            funcArgs.add(arg);
+
+            while(match(ARGSEP)) {
+                arg = parseExpression();
+                funcArgs.add(arg);
+            }
+        }
+
+        return funcArgs;
+    }
+
+    /**
+     * Checks whether the next token is the one we expect and if so consumes it (points the lookahead token
+     * to the next token). Otherwise throws an exception.
+     *
+     * @param tokenType expected type of token
+     * @param errorMessage exception message
+     *
+     * @return Consumed token
+     */
     protected Token consumeOrThrow(TokenType tokenType, String errorMessage) {
         if (match(tokenType)) {
             return currentToken();
@@ -194,6 +241,14 @@ public class DefaultParser implements Parser {
         throw new ParserException(errorMessage, lookaheadToken());
     }
 
+    /**
+     * Check whether the lookahead token points to any of the passed token types. If yes, points the lookahead to the
+     * next token.
+     *
+     * @param tokenTypes token types
+     *
+     * @return true if lookahead token matches any of the passed token types, false otherwise.
+     */
     protected boolean match(TokenType... tokenTypes) {
         for (TokenType tokenType : tokenTypes) {
             if (lookaheadToken().getTokenType() == tokenType) {

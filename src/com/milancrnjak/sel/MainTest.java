@@ -16,7 +16,7 @@ import java.util.List;
 public class MainTest {
 
     public static void main(String[] args) {
-        String input = "(5 + -3) * -4";
+        String input = "pow(2+1,3-1) * -4";
 
         try {
             // tokenize the input

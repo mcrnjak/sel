@@ -27,6 +27,8 @@ public enum TokenType {
     NULL,
     STRING,
     NUMBER,
+    FUNC,
+    ARGSEP,
     END
 
 }

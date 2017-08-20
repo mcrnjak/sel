@@ -57,6 +57,20 @@ public class ParseTreeLispStringifier implements ParseTreeVisitor<String> {
         return node.getToken().getSequence();
     }
 
+    @Override
+    public String visitFunctionNode(FunctionNode node) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("(").append(node.getToken().getSequence());
+
+        for (ParseTreeNode argNode : node.getFuncArgs()) {
+            sb.append(" ").append(visit(argNode));
+        }
+
+        sb.append(")");
+
+        return sb.toString();
+    }
+
     private String visitBinaryNode(BinaryNode node) {
         return "(" + node.getOperator().getTokenType() + " " + visit(node.getLeftNode()) + " " + visit(node.getRightNode()) + ")";
     }

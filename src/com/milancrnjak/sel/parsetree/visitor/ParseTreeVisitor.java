@@ -85,4 +85,12 @@ public interface ParseTreeVisitor<T> {
      * @return
      */
     T visitLiteralNode(LiteralNode node);
+
+    /**
+     * Visits the {@link FunctionNode} and does the work specific to that node.
+     *
+     * @param node node to perform the work on
+     * @return
+     */
+    T visitFunctionNode(FunctionNode node);
 }
