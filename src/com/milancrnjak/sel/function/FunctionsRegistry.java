@@ -42,4 +42,15 @@ public class FunctionsRegistry {
     public static synchronized void registerFunction(String name, Function function) {
         functions.put(name, function);
     }
+
+    /**
+     * Retrives a function from the registry.
+     *
+     * @param name function name
+     *
+     * @return Function object
+     */
+    public static synchronized Function getFunction(String name) {
+        return functions.get(name);
+    }
 }

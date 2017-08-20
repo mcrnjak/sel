@@ -1,5 +1,6 @@
 package com.milancrnjak.sel.parsetree.visitor;
 
+import com.milancrnjak.sel.exception.ParseTreeVisitorException;
 import com.milancrnjak.sel.parsetree.ParseTreeNode;
 import com.milancrnjak.sel.parsetree.impl.*;
 
@@ -20,7 +21,7 @@ public interface ParseTreeVisitor<T> {
      * @param node node to perform the work on
      * @return
      */
-    T visit(ParseTreeNode node);
+    T visit(ParseTreeNode node) throws ParseTreeVisitorException;
 
     /**
      * Visits the {@link AddSubNode} and does the work specific to that node.
@@ -28,7 +29,7 @@ public interface ParseTreeVisitor<T> {
      * @param node node to perform the work on
      * @return
      */
-    T visitAddSubNode(AddSubNode node);
+    T visitAddSubNode(AddSubNode node) throws ParseTreeVisitorException;
 
     /**
      * Visits the {@link BoolNode} and does the work specific to that node.
@@ -36,7 +37,7 @@ public interface ParseTreeVisitor<T> {
      * @param node node to perform the work on
      * @return
      */
-    T visitBoolNode(BoolNode node);
+    T visitBoolNode(BoolNode node) throws ParseTreeVisitorException;
 
     /**
      * Visits the {@link CompareNode} and does the work specific to that node.
@@ -44,7 +45,7 @@ public interface ParseTreeVisitor<T> {
      * @param node node to perform the work on
      * @return
      */
-    T visitCompareNode(CompareNode node);
+    T visitCompareNode(CompareNode node) throws ParseTreeVisitorException;
 
     /**
      * Visits the {@link EqualNode} and does the work specific to that node.
@@ -52,7 +53,7 @@ public interface ParseTreeVisitor<T> {
      * @param node node to perform the work on
      * @return
      */
-    T visitEqualNode(EqualNode node);
+    T visitEqualNode(EqualNode node) throws ParseTreeVisitorException;
 
     /**
      * Visits the {@link MulDivNode} and does the work specific to that node.
@@ -60,7 +61,7 @@ public interface ParseTreeVisitor<T> {
      * @param node node to perform the work on
      * @return
      */
-    T visitMulDivNode(MulDivNode node);
+    T visitMulDivNode(MulDivNode node) throws ParseTreeVisitorException;
 
     /**
      * Visits the {@link ParenthesesNode} and does the work specific to that node.
@@ -68,7 +69,7 @@ public interface ParseTreeVisitor<T> {
      * @param node node to perform the work on
      * @return
      */
-    T visitParenthesesNode(ParenthesesNode node);
+    T visitParenthesesNode(ParenthesesNode node) throws ParseTreeVisitorException;
 
     /**
      * Visits the {@link UnaryNode} and does the work specific to that node.
@@ -76,7 +77,7 @@ public interface ParseTreeVisitor<T> {
      * @param node node to perform the work on
      * @return
      */
-    T visitUnaryNode(UnaryNode node);
+    T visitUnaryNode(UnaryNode node) throws ParseTreeVisitorException;
 
     /**
      * Visits the {@link LiteralNode} and does the work specific to that node.
@@ -84,7 +85,7 @@ public interface ParseTreeVisitor<T> {
      * @param node node to perform the work on
      * @return
      */
-    T visitLiteralNode(LiteralNode node);
+    T visitLiteralNode(LiteralNode node) throws ParseTreeVisitorException;
 
     /**
      * Visits the {@link FunctionNode} and does the work specific to that node.
@@ -92,5 +93,5 @@ public interface ParseTreeVisitor<T> {
      * @param node node to perform the work on
      * @return
      */
-    T visitFunctionNode(FunctionNode node);
+    T visitFunctionNode(FunctionNode node) throws ParseTreeVisitorException;
 }

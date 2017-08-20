@@ -1,10 +1,12 @@
 package com.milancrnjak.sel;
 
+import com.milancrnjak.sel.exception.ParseTreeVisitorException;
 import com.milancrnjak.sel.exception.ParserException;
 import com.milancrnjak.sel.exception.TokenizerException;
 import com.milancrnjak.sel.parser.DefaultParser;
 import com.milancrnjak.sel.parser.Parser;
 import com.milancrnjak.sel.parsetree.ParseTreeNode;
+import com.milancrnjak.sel.parsetree.visitor.ParseTreeInterpreter;
 import com.milancrnjak.sel.parsetree.visitor.ParseTreeLispStringifier;
 import com.milancrnjak.sel.parsetree.visitor.ParseTreeVisitor;
 import com.milancrnjak.sel.token.Token;
@@ -16,7 +18,7 @@ import java.util.List;
 public class MainTest {
 
     public static void main(String[] args) {
-        String input = "pow(2+1,3-1) * -4";
+        String input = "date() > date('20-08-2017 07:00','dd-MM-yyyy hh:mm')";
 
         try {
             // tokenize the input
@@ -34,10 +36,17 @@ public class MainTest {
             ParseTreeVisitor<String> stringifier = new ParseTreeLispStringifier();
             System.out.println(stringifier.visit(parseTree));
 
+            // interpret
+            ParseTreeVisitor<Object> interpreter = new ParseTreeInterpreter();
+            System.out.println(interpreter.visit(parseTree));
+
         } catch (TokenizerException e) {
             System.err.println("Error in input at position [" + e.getPosition() + "] " + e.getMessage());
         } catch (ParserException e) {
             System.err.println("Error in input at token [" + e.getToken().getStartPos() + "," + e.getToken().getEndPos() + "] " + e.getMessage());
+        } catch (ParseTreeVisitorException e) {
+            System.err.println("Error in parse tree visitor.");
+            e.printStackTrace();
         }
     }
 }
