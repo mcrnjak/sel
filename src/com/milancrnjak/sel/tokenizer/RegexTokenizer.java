@@ -2,6 +2,7 @@ package com.milancrnjak.sel.tokenizer;
 
 import com.milancrnjak.sel.exception.TokenizerException;
 import com.milancrnjak.sel.function.FunctionsRegistry;
+import com.milancrnjak.sel.function.ObjectsRegistry;
 import com.milancrnjak.sel.token.Token;
 import com.milancrnjak.sel.token.TokenType;
 import com.milancrnjak.sel.util.StringUtils;
@@ -86,7 +87,8 @@ public class RegexTokenizer implements Tokenizer {
         addTokenDescription("!", TokenType.NOT);
         addTokenDescription("'((\\\\')|[^'])*?'", TokenType.STRING);
         addTokenDescription("[0-9]+(\\.[0-9]+)*", TokenType.NUMBER);
-        addTokenDescription(StringUtils.join("|", FunctionsRegistry.getRegisteredFunctions()), TokenType.FUNC);
+        addTokenDescription("[a-zA-Z][a-zA-Z0-9_]+", TokenType.ID);
+        addTokenDescription("\\.", TokenType.DOT);
         addTokenDescription(",", TokenType.ARGSEP);
     }
 

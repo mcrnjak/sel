@@ -246,6 +246,11 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
         }
     }
 
+    @Override
+    public Object visitIdentifierNode(IdentifierNode node) throws ParseTreeVisitorException {
+        return null;
+    }
+
     protected <T> T castOrThrow(Object val, Class<T> klass, RuntimeException e) {
         if (!klass.isAssignableFrom(val.getClass())) {
             throw e;

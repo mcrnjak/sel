@@ -184,8 +184,8 @@ public class DefaultParser implements Parser {
             return new ParenthesesNode(node);
         }
 
-        if (match(FUNC)) {
-            return parseFunction();
+        if (match(ID)) {
+            return parseCallable(null);
         }
 
         throw new ParserException("Unknown symbol detected", lookaheadToken());
@@ -196,20 +196,33 @@ public class DefaultParser implements Parser {
      *
      * @return corresponding parse tree node.
      */
-    protected ParseTreeNode parseFunction() {
-        Token funcId = currentToken();
-        consumeOrThrow(LEFT_PAREN, "Opening '(' expected after function name");
-        List<ParseTreeNode> funcArgs = parseFuncArgs();
-        consumeOrThrow(RIGHT_PAREN, "Closing ')' expected for function");
-        return new FunctionNode(funcId, funcArgs);
+    protected ParseTreeNode parseCallable(ParseTreeNode invoker) {
+        Token identifier = currentToken();
+        ParseTreeNode node = new IdentifierNode(invoker, identifier);
+
+        if (match(LEFT_PAREN)) {
+            List<ParseTreeNode> funcArgs = parseArgs();
+            node = new FunctionNode(invoker, identifier, funcArgs);
+            consumeOrThrow(RIGHT_PAREN, "Closing ')' expected for function");
+        }
+
+        if (match(DOT)) {
+            if (match(ID)) {
+                node = parseCallable(node);
+            } else {
+                throw new ParserException("Expected identifier token", lookaheadToken());
+            }
+        }
+
+        return node;
     }
 
     /**
-     * Parses the 'funcargs' rule from the grammar.
+     * Parses the 'args' rule from the grammar.
      *
-     * @return List of parse tree nodes (each function argument is a node in the list).
+     * @return List of parse tree nodes (each argument is a node in the list).
      */
-    protected List<ParseTreeNode> parseFuncArgs() {
+    protected List<ParseTreeNode> parseArgs() {
         List<ParseTreeNode> funcArgs = new LinkedList<>();
 
         if (lookaheadToken().getTokenType() != RIGHT_PAREN) {

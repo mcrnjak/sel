@@ -94,4 +94,13 @@ public interface ParseTreeVisitor<T> {
      * @return
      */
     T visitFunctionNode(FunctionNode node) throws ParseTreeVisitorException;
+
+    /**
+     * Visits the {@link IdentifierNode} and does the work specific to that node.
+     *
+     * @param node node to perform the work on
+     * @return
+     * @throws ParseTreeVisitorException
+     */
+    T visitIdentifierNode(IdentifierNode node) throws ParseTreeVisitorException;
 }

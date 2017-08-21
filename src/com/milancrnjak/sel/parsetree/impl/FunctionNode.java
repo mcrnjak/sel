@@ -13,10 +13,12 @@ import java.util.List;
  */
 public class FunctionNode implements ParseTreeNode {
 
+    private ParseTreeNode invokerNode;
     private Token token;
     private List<ParseTreeNode> funcArgs;
 
-    public FunctionNode(Token token, List<ParseTreeNode> funcArgs) {
+    public FunctionNode(ParseTreeNode invokerNode, Token token, List<ParseTreeNode> funcArgs) {
+        this.invokerNode = invokerNode;
         this.token = token;
         this.funcArgs = funcArgs;
     }
@@ -29,6 +31,10 @@ public class FunctionNode implements ParseTreeNode {
         return funcArgs;
     }
 
+    public ParseTreeNode getInvokerNode() {
+        return invokerNode;
+    }
+
     @Override
     public <T> T accept(ParseTreeVisitor<T> visitor) {
         return visitor.visitFunctionNode(this);
@@ -36,7 +42,13 @@ public class FunctionNode implements ParseTreeNode {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(getToken().getSequence()).append("(");
+        StringBuilder sb = new StringBuilder();
+
+        if (invokerNode != null) {
+            sb.append(invokerNode.toString()).append(".");
+        }
+
+        sb.append(getToken().getSequence()).append("(");
 
         for (ParseTreeNode argNode : getFuncArgs()) {
             sb.append(argNode.toString()).append(",");

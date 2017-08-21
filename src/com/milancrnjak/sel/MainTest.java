@@ -18,7 +18,7 @@ import java.util.List;
 public class MainTest {
 
     public static void main(String[] args) {
-        String input = "date() > date('20-08-2017 07:00','dd-MM-yyyy hh:mm')";
+        String input = "a4().asdf.afd(4, 3)";
 
         try {
             // tokenize the input
@@ -36,9 +36,9 @@ public class MainTest {
             ParseTreeVisitor<String> stringifier = new ParseTreeLispStringifier();
             System.out.println(stringifier.visit(parseTree));
 
-            // interpret
-            ParseTreeVisitor<Object> interpreter = new ParseTreeInterpreter();
-            System.out.println(interpreter.visit(parseTree));
+//            // interpret
+//            ParseTreeVisitor<Object> interpreter = new ParseTreeInterpreter();
+//            System.out.println(interpreter.visit(parseTree));
 
         } catch (TokenizerException e) {
             System.err.println("Error in input at position [" + e.getPosition() + "] " + e.getMessage());

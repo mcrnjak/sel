@@ -1,5 +1,6 @@
 package com.milancrnjak.sel.parsetree.visitor;
 
+import com.milancrnjak.sel.exception.ParseTreeVisitorException;
 import com.milancrnjak.sel.parsetree.BinaryNode;
 import com.milancrnjak.sel.parsetree.ParseTreeNode;
 import com.milancrnjak.sel.parsetree.impl.*;
@@ -62,6 +63,10 @@ public class ParseTreeLispStringifier implements ParseTreeVisitor<String> {
         StringBuilder sb = new StringBuilder();
         sb.append("(").append(node.getToken().getSequence());
 
+        if (node.getInvokerNode() != null) {
+            sb.append(" ").append(visit(node.getInvokerNode()));
+        }
+
         for (ParseTreeNode argNode : node.getFuncArgs()) {
             sb.append(" ").append(visit(argNode));
         }
@@ -69,6 +74,15 @@ public class ParseTreeLispStringifier implements ParseTreeVisitor<String> {
         sb.append(")");
 
         return sb.toString();
+    }
+
+    @Override
+    public String visitIdentifierNode(IdentifierNode node) throws ParseTreeVisitorException {
+        if (node.getInvokerNode() == null) {
+            return node.getToken().getSequence();
+        }
+
+        return "(get " + visit(node.getInvokerNode()) + " " + node.getToken().getSequence() + ")";
     }
 
     private String visitBinaryNode(BinaryNode node) {
