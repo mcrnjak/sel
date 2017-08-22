@@ -6,7 +6,7 @@ compare         ->  addSub ( (GT | GTE | LT | LTE) addSub)* ;
 addSub          ->  mulDiv ( (PLUS | MINUS) mulDiv)* ;
 mulDiv          ->  unary ( (MUL | DIV) unary)* ;
 unary           ->  (NOT | MINUS)? primary ;
-primary         ->  STRING | NUMBER | 'true' | 'false' | 'null' | '(' expression ')' | function | callable ;
+primary         ->  STRING | INT | DOUBLE | 'true' | 'false' | 'null' | '(' expression ')' | callable ;
 callable        ->  ID ( '(' args? ')' )? ('.' callable)* ;
 args            ->  expression (',' expression)* ;
 
@@ -24,5 +24,6 @@ MUL             ->  '*' ;
 DIV             ->  '/' ;
 NOT             ->  '!' ;
 STRING          ->  '((\\')|[^'])*?' ;
-NUMBER          ->  [0-9]+(\.[0-9]+)* ;
+DOUBLE          ->  [0-9]+(\.[0-9]+)* ;
+INT             ->  [0-9]+ ;
 ID              ->  [a-zA-Z][a-zA-Z0-9_]+ ;

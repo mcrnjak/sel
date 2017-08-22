@@ -174,7 +174,7 @@ public class DefaultParser implements Parser {
      * @return corresponding parse tree node.
      */
     protected ParseTreeNode parsePrimary() {
-        if (match(STRING, NUMBER, TRUE, FALSE, NULL)) {
+        if (match(STRING, DOUBLE, INT, TRUE, FALSE, NULL)) {
             return new LiteralNode(currentToken());
         }
 

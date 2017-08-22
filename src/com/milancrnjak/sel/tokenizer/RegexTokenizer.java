@@ -86,7 +86,8 @@ public class RegexTokenizer implements Tokenizer {
         addTokenDescription("ne|!=", TokenType.NOT_EQUAL);
         addTokenDescription("!", TokenType.NOT);
         addTokenDescription("'((\\\\')|[^'])*?'", TokenType.STRING);
-        addTokenDescription("[0-9]+(\\.[0-9]+)*", TokenType.NUMBER);
+        addTokenDescription("[0-9]+\\.[0-9]+", TokenType.DOUBLE);
+        addTokenDescription("[0-9]+", TokenType.INT);
         addTokenDescription("[a-zA-Z][a-zA-Z0-9_]+", TokenType.ID);
         addTokenDescription("\\.", TokenType.DOT);
         addTokenDescription(",", TokenType.ARGSEP);

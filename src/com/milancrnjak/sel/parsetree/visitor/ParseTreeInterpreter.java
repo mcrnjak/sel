@@ -32,13 +32,13 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
         Object rightVal = visit(node.getRightNode());
 
         if (tokenType == TokenType.MINUS) {
-            Double left = castOrThrow(leftVal, Double.class,
-                    new ParseTreeVisitorException("Left operand must evaluate to Double", node.getLeftNode()));
+            Number left = castOrThrow(leftVal, Number.class,
+                    new ParseTreeVisitorException("Left operand must evaluate to Number", node.getLeftNode()));
 
-            Double right = castOrThrow(rightVal, Double.class,
-                    new ParseTreeVisitorException("Right operand must evaluate to Double", node.getRightNode()));
+            Number right = castOrThrow(rightVal, Number.class,
+                    new ParseTreeVisitorException("Right operand must evaluate to Number", node.getRightNode()));
 
-            return left - right;
+            return left.doubleValue() - right.doubleValue();
         } else if (tokenType == TokenType.PLUS) {
             if (leftVal instanceof String) {
                 // string concatenation
@@ -47,13 +47,13 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
             }
 
             // else must be a number
-            Double left = castOrThrow(leftVal, Double.class,
-                    new ParseTreeVisitorException("Left operand must evaluate to Double", node.getLeftNode()));
+            Number left = castOrThrow(leftVal, Number.class,
+                    new ParseTreeVisitorException("Left operand must evaluate to Number", node.getLeftNode()));
 
-            Double right = castOrThrow(rightVal, Double.class,
-                    new ParseTreeVisitorException("Right operand must evaluate to Double", node.getRightNode()));
+            Number right = castOrThrow(rightVal, Number.class,
+                    new ParseTreeVisitorException("Right operand must evaluate to Number", node.getRightNode()));
 
-            return left + right;
+            return left.doubleValue() + right.doubleValue();
         }
 
         throw new ParseTreeVisitorException("Invalid operator in AddSubNode", node);
@@ -88,12 +88,12 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
         Object leftVal = visit(node.getLeftNode());
         Object rightVal = visit(node.getRightNode());
 
-        if (leftVal instanceof Double) {
-            Double left = (Double) leftVal;
-            Double right = castOrThrow(rightVal, Double.class,
-                    new ParseTreeVisitorException("Right operand must evaluate to Double", node.getRightNode()));
+        if (leftVal instanceof Number) {
+            Number left = (Number) leftVal;
+            Number right = castOrThrow(rightVal, Number.class,
+                    new ParseTreeVisitorException("Right operand must evaluate to Number", node.getRightNode()));
 
-            return compareDoubles(left, right, tokenType);
+            return compareNumbers(left, right, tokenType);
         } else if (leftVal instanceof String) {
             String left = (String) leftVal;
             String right = castOrThrow(rightVal, String.class,
@@ -113,15 +113,15 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
         }
     }
 
-    protected Object compareDoubles(Double left, Double right, TokenType tokenType) {
+    protected Object compareNumbers(Number left, Number right, TokenType tokenType) {
         if (tokenType == TokenType.GTE) {
-            return left >= right;
+            return left.doubleValue() >= right.doubleValue();
         } else if (tokenType == TokenType.GT) {
-            return left > right;
+            return left.doubleValue() > right.doubleValue();
         } else if (tokenType == TokenType.LTE) {
-            return left <= right;
+            return left.doubleValue() <= right.doubleValue();
         } else if (tokenType == TokenType.LT) {
-            return left < right;
+            return left.doubleValue() < right.doubleValue();
         }
 
         throw new RuntimeException("Invalid operator " + tokenType);
@@ -172,17 +172,17 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
     @Override
     public Object visitMulDivNode(MulDivNode node) {
         Object leftVal = visit(node.getLeftNode());
-        Double leftDouble =  castOrThrow(leftVal, Double.class,
-                new ParseTreeVisitorException("Left node does not evaluate to Double", node.getLeftNode()));
+        Number leftNum =  castOrThrow(leftVal, Number.class,
+                new ParseTreeVisitorException("Left node does not evaluate to Number", node.getLeftNode()));
 
         Object rightVal = visit(node.getRightNode());
-        Double rightDouble = castOrThrow(rightVal, Double.class,
-                new ParseTreeVisitorException("Right node does not evaluate to Double", node.getRightNode()));
+        Number rightNum = castOrThrow(rightVal, Number.class,
+                new ParseTreeVisitorException("Right node does not evaluate to Number", node.getRightNode()));
 
         if (node.getOperator().getTokenType() == TokenType.MUL) {
-            return leftDouble * rightDouble;
+            return leftNum.doubleValue() * rightNum.doubleValue();
         } else if (node.getOperator().getTokenType() == TokenType.DIV) {
-            return leftDouble / rightDouble;
+            return leftNum.doubleValue() / rightNum.doubleValue();
         }
 
         throw new ParseTreeVisitorException("Invalid operator in MulDivNode", node);
@@ -203,9 +203,9 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
                     new ParseTreeVisitorException("Node does not evaluate to Boolean", node.getNode()));
             return !boolVal;
         } else if (tokenType == TokenType.MINUS) {
-            Double doubleVal = castOrThrow(val, Double.class,
-                    new ParseTreeVisitorException("Node does not evaluate to Double", node.getNode()));
-            return -doubleVal;
+            Number doubleVal = castOrThrow(val, Number.class,
+                    new ParseTreeVisitorException("Node does not evaluate to Number", node.getNode()));
+            return -doubleVal.doubleValue();
         }
 
         throw new ParseTreeVisitorException("Invalid unary operator", node);
@@ -218,14 +218,29 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
         if (tokenType == TokenType.TRUE) return true;
         if (tokenType == TokenType.FALSE) return false;
 
-        try {
-            return Double.parseDouble(node.getToken().getSequence());
-        } catch (NumberFormatException e) {
-            // it's a string
+        if (tokenType == TokenType.INT) {
+            try {
+                return Integer.parseInt(node.getToken().getSequence());
+            } catch (NumberFormatException e) {
+                throw new ParseTreeVisitorException("Error while parsing Int value", e, node);
+            }
+        }
+
+        if (tokenType == TokenType.DOUBLE) {
+            try {
+                return Double.parseDouble(node.getToken().getSequence());
+            } catch (NumberFormatException e) {
+                throw new ParseTreeVisitorException("Error while parsing Double value", e, node);
+            }
+        }
+
+        if (tokenType == TokenType.STRING) {
             String seq = node.getToken().getSequence();
             // remove the first and last quote
             return seq.substring(1, seq.length() - 1);
         }
+
+        throw new ParseTreeVisitorException("Unknown literal node type", node);
     }
 
     @Override
