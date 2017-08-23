@@ -1,6 +1,7 @@
 package com.milancrnjak.sel.function;
 
 import com.milancrnjak.sel.function.impl.DateFunction;
+import com.milancrnjak.sel.function.impl.ListFunction;
 import com.milancrnjak.sel.function.impl.PowFunction;
 
 import java.util.Collection;
@@ -20,6 +21,7 @@ public class FunctionsRegistry {
     static {
         registerFunction("pow", new PowFunction());
         registerFunction("date", new DateFunction());
+        registerFunction("list", new ListFunction());
     }
 
     private FunctionsRegistry() {}
