@@ -309,7 +309,7 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
     private Method findMethod(Object invoker, String name, Class<?>[] argTypes) {
         Method[] methods = invoker.getClass().getMethods();
         for (Method m : methods) {
-            if (m.getName().equals(name) && m.getParameterCount() == argTypes.length) {
+            if (m.getName().equals(name) && m.getParameterTypes().length == argTypes.length) {
                 Class[] parameterTypes = m.getParameterTypes();
 
                 for (int i = 0; i < argTypes.length; i++) {
