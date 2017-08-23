@@ -280,6 +280,10 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
 
         Object invoker = visit(node.getInvokerNode());
 
+        if (invoker instanceof ContextObject) {
+            invoker = ((ContextObject) invoker).getObject();
+        }
+
         try {
             return invoke(invoker, name, args);
         } catch (Exception e) {

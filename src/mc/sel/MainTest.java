@@ -19,7 +19,7 @@ import java.util.*;
 public class MainTest {
 
     public static void main(String[] args) {
-        String input = "list(pow(this.aaa.length() - 1, 2), this.bbb - (this.bbb / 45)).get(1) - this.ccc.get(0) * 2";
+        String input = "pow(this.aaa.length() - 1, list(1,2).get(1)) * this.bbb - this.get('ccc').get(0) * 2";
 
         try {
             // tokenize the input
@@ -40,10 +40,10 @@ public class MainTest {
             // context object
             Map<String, Object> obj = new HashMap<>();
             obj.put("aaa", "Hello");
-            obj.put("bbb", 123);
+            obj.put("bbb", 10);
             List<Integer> list = new ArrayList<>();
-            list.add(23);
-            list.add(54);
+            list.add(5);
+            list.add(15);
             obj.put("ccc", list);
 
             // interpret
