@@ -1,11 +1,8 @@
 package com.milancrnjak.sel.tokenizer;
 
 import com.milancrnjak.sel.exception.TokenizerException;
-import com.milancrnjak.sel.function.FunctionsRegistry;
-import com.milancrnjak.sel.function.ObjectsRegistry;
 import com.milancrnjak.sel.token.Token;
 import com.milancrnjak.sel.token.TokenType;
-import com.milancrnjak.sel.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -26,13 +23,10 @@ public class RegexTokenizer implements Tokenizer {
         initialize();
     }
 
-
-
     @Override
     public List<Token> tokenize(String input) throws TokenizerException {
         String s = input.trim();
         int totalLength = input.length();
-
 
         LinkedList<Token> tokens = new LinkedList<>();
 
@@ -60,7 +54,6 @@ public class RegexTokenizer implements Tokenizer {
             if (!match) {
                 throw new TokenizerException("Unknown symbol detected", totalLength - currentLength);
             }
-
         }
 
         return tokens;

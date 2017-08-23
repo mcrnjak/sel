@@ -17,9 +17,9 @@ public class PowFunction implements Function {
             throw new IllegalArgumentException("Pow function requires two arguments");
         }
 
-        Double a = (Double) args.get(0);
-        Double b = (Double) args.get(1);
+        Number a = (Number) args.get(0);
+        Number b = (Number) args.get(1);
 
-        return Math.pow(a, b);
+        return Math.pow(a.doubleValue(), b.doubleValue());
     }
 }

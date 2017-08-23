@@ -3,10 +3,18 @@ package com.milancrnjak.sel.parsetree.visitor;
 import com.milancrnjak.sel.exception.ParseTreeVisitorException;
 import com.milancrnjak.sel.function.Function;
 import com.milancrnjak.sel.function.FunctionsRegistry;
+import com.milancrnjak.sel.identifier.ObjectIdentifier;
+import com.milancrnjak.sel.identifier.ObjectsRegistry;
+import com.milancrnjak.sel.identifier.context.Context;
+import com.milancrnjak.sel.identifier.context.ContextObject;
 import com.milancrnjak.sel.parsetree.ParseTreeNode;
 import com.milancrnjak.sel.parsetree.impl.*;
 import com.milancrnjak.sel.token.TokenType;
 
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,6 +26,12 @@ import java.util.List;
  * @author Milan Crnjak
  */
 public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
+
+    private ContextObject contextObject;
+
+    public ParseTreeInterpreter(ContextObject contextObject) {
+        this.contextObject = contextObject;
+    }
 
     @Override
     public Object visit(ParseTreeNode node) {
@@ -67,19 +81,17 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
         Boolean left = castOrThrow(leftVal, Boolean.class,
                 new ParseTreeVisitorException("Left operand must evaluate to Boolean", node.getLeftNode()));
 
-        if (operatorType == TokenType.OR && left == true) {
+        if (operatorType == TokenType.OR && left) {
             return true;
         }
 
-        if (operatorType == TokenType.AND && left == false) {
+        if (operatorType == TokenType.AND && !left) {
             return false;
         }
 
         Object rightVal = visit(node.getRightNode());
-        Boolean right = castOrThrow(rightVal, Boolean.class,
+        return castOrThrow(rightVal, Boolean.class,
                 new ParseTreeVisitorException("Right operand must evaluate to Boolean", node.getRightNode()));
-
-        return right;
     }
 
     @Override
@@ -245,25 +257,111 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
 
     @Override
     public Object visitFunctionNode(FunctionNode node) {
-        String funcName = node.getToken().getSequence();
-        Function func = FunctionsRegistry.getFunction(funcName);
+        String name = node.getToken().getSequence();
 
-        List<Object> funcArgs = new ArrayList<>(node.getFuncArgs().size());
-
+        List<Object> args = new ArrayList<>(node.getFuncArgs().size());
         for (ParseTreeNode arg : node.getFuncArgs()) {
-            funcArgs.add(visit(arg));
+            args.add(visit(arg));
         }
+
+        if (node.getInvokerNode() == null) {
+            Function func = FunctionsRegistry.getFunction(name);
+
+            if (func == null) {
+                throw new ParseTreeVisitorException("Undefined function", node);
+            }
+
+            try {
+                return func.execute(args);
+            } catch(RuntimeException e) {
+                throw new ParseTreeVisitorException("Error while executing function", e, node);
+            }
+        }
+
+        Object invoker = visit(node.getInvokerNode());
 
         try {
-            return func.execute(funcArgs);
-        } catch(RuntimeException e) {
-            throw new ParseTreeVisitorException("Error while executing function", e, node);
+            return invoke(invoker, name, args);
+        } catch (Exception e) {
+            throw new ParseTreeVisitorException("Error while executing method", e, node);
         }
+
+    }
+
+    private Object invoke(Object invoker, String name, List<Object> args) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Class<?>[] argTypes = new Class[args.size()];
+        for (int i = 0; i < args.size(); i++) {
+            argTypes[i] = args.get(i).getClass();
+        }
+
+        Method method = findMethod(invoker, name, argTypes);
+        if (method != null) {
+            return method.invoke(invoker, args.toArray());
+        } else {
+            throw new RuntimeException("No such method exception: " + name);
+        }
+    }
+
+    private Method findMethod(Object invoker, String name, Class<?>[] argTypes) {
+        Method[] methods = invoker.getClass().getMethods();
+        for (Method m : methods) {
+            if (m.getName().equals(name) && m.getParameterCount() == argTypes.length) {
+                Class[] parameterTypes = m.getParameterTypes();
+
+                for (int i = 0; i < argTypes.length; i++) {
+                    // workaround for the problem with primitive type classes
+                    if (argTypes[i].isAssignableFrom(parameterTypes[i])) {
+                        return null;
+                    }
+                }
+
+                return m;
+            }
+        }
+
+        return null;
     }
 
     @Override
     public Object visitIdentifierNode(IdentifierNode node) throws ParseTreeVisitorException {
-        return null;
+        String name = node.getToken().getSequence();
+
+        ObjectIdentifier objIdentifier = ObjectsRegistry.getObjectIdentifier(name);
+        Object invoker = null;
+
+        if (node.getInvokerNode() != null) {
+            invoker = visit(node.getInvokerNode());
+        }
+
+        Context ctx = new Context();
+        ctx.setContextObject(contextObject);
+
+        if (objIdentifier != null) {
+            return objIdentifier.execute(ctx);
+        } else {
+            // it's a property access
+            if (invoker == null) {
+                throw new NullPointerException();
+            }
+
+            if (invoker instanceof ContextObject) {
+                ContextObject obj = (ContextObject) invoker;
+                return obj.getProperty(name);
+            }
+
+            try {
+                for (PropertyDescriptor pd : Introspector.getBeanInfo(invoker.getClass()).getPropertyDescriptors()) {
+                    if (pd.getName().equals(name) && pd.getReadMethod() != null) {
+                        return pd.getReadMethod().invoke(invoker);
+                    }
+                }
+            } catch (Exception e) {
+                throw new ParseTreeVisitorException("Error while accessing property", node);
+            }
+
+            throw new ParseTreeVisitorException("Cannot resolve identifier", node);
+        }
+
     }
 
     protected <T> T castOrThrow(Object val, Class<T> klass, RuntimeException e) {

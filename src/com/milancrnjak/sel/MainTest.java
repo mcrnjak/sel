@@ -3,6 +3,7 @@ package com.milancrnjak.sel;
 import com.milancrnjak.sel.exception.ParseTreeVisitorException;
 import com.milancrnjak.sel.exception.ParserException;
 import com.milancrnjak.sel.exception.TokenizerException;
+import com.milancrnjak.sel.identifier.context.MapContextObject;
 import com.milancrnjak.sel.parser.DefaultParser;
 import com.milancrnjak.sel.parser.Parser;
 import com.milancrnjak.sel.parsetree.ParseTreeNode;
@@ -13,12 +14,13 @@ import com.milancrnjak.sel.token.Token;
 import com.milancrnjak.sel.tokenizer.RegexTokenizer;
 import com.milancrnjak.sel.tokenizer.Tokenizer;
 
-import java.util.List;
+import java.lang.reflect.Method;
+import java.util.*;
 
 public class MainTest {
 
     public static void main(String[] args) {
-        String input = "a4().asdf.afd(4, 3)";
+        String input = "list(pow(this.aaa.length() - 1, 2), this.bbb - (this.bbb / 45)).get(1) - this.ccc.get(0) * 2";
 
         try {
             // tokenize the input
@@ -36,14 +38,24 @@ public class MainTest {
             ParseTreeVisitor<String> stringifier = new ParseTreeLispStringifier();
             System.out.println(stringifier.visit(parseTree));
 
-//            // interpret
-//            ParseTreeVisitor<Object> interpreter = new ParseTreeInterpreter();
-//            System.out.println(interpreter.visit(parseTree));
+            // context object
+            Map<String, Object> obj = new HashMap<>();
+            obj.put("aaa", "Hello");
+            obj.put("bbb", 123);
+            List<Integer> list = new ArrayList<>();
+            list.add(23);
+            list.add(54);
+            obj.put("ccc", list);
+
+            // interpret
+            ParseTreeVisitor<Object> interpreter = new ParseTreeInterpreter(new MapContextObject(obj));
+            System.out.println(interpreter.visit(parseTree));
 
         } catch (TokenizerException e) {
             System.err.println("Error in input at position [" + e.getPosition() + "] " + e.getMessage());
         } catch (ParserException e) {
-            System.err.println("Error in input at token [" + e.getToken().getStartPos() + "," + e.getToken().getEndPos() + "] " + e.getMessage());
+            System.err.println("Error in input at token [" +
+                    e.getToken().getStartPos() + "," + e.getToken().getEndPos() + "] " + e.getMessage());
         } catch (ParseTreeVisitorException e) {
             System.err.println("Error in parse tree visitor.");
             e.printStackTrace();
