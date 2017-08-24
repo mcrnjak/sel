@@ -174,11 +174,23 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
         Object leftVal = visit(node.getLeftNode());
         Object rightVal = visit(node.getRightNode());
 
+        TokenType operator = node.getOperator().getTokenType();
+
         if (leftVal == null) {
-            return null == rightVal;
+            if (operator == TokenType.EQUAL) {
+                return null == rightVal;
+            } else {
+                return null != rightVal;
+            }
+
         }
 
-        return leftVal.equals(rightVal);
+        if (operator  == TokenType.EQUAL) {
+            return leftVal.equals(rightVal);
+        } else {
+            return !leftVal.equals(rightVal);
+        }
+
     }
 
     @Override
