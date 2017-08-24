@@ -50,30 +50,30 @@ SEL supports the following data types:
 The following operators are built into the language.
 
 ### Mathematical Operators
-* __+__ Adds numbers or cancatenates strings
-* __-__ Subracts numbers
-* __*__ Multiplies numbers
-* __/__ Divides numbers
+* `+` - Adds numbers or cancatenates strings
+* `-` - Subracts numbers
+* `*` - Multiplies numbers
+* `/` - Divides numbers
 
 ### Boolean Operators
-* __and__ __&&__ boolean and. If left operand evaluates to `false` right operand is not evaluated.
-* __or__ __||__ boolean or. If left operand evaluates to `true` right operand is not evaluated.
+* `and`, `&&` - boolean and. If left operand evaluates to `false` right operand is not evaluated.
+* `or`, `||` - boolean or. If left operand evaluates to `true` right operand is not evaluated.
 
 ### Unary Operators
-* __-__ minus (e.g. `-5`)
-* __!__ not (negates boolean operator, e.g. `!false`)
+* `-` - minus (e.g. `-5`)
+* `!` - not (negates a boolean operand, e.g. `!false`)
 
 ### Equality Operators
-* __eq__ __==__ equal
-* __ne__ __!=__ not equal
+* `eq`, `==` - equal
+* `ne`, `!=` - not equal
 
 ### Comparison Operators
 Comparison operators work with numbers, strings and dates.
 
-* __gt__ __>__ greater than
-* __gte__ __>=__ greater or equal than
-* __lt__ __<__ less than
-* __lte__ __<=__ less or equal than
+* `gt`, `>` - greater than
+* `gte`, `>=` - greater or equal than
+* `lt`, `<` - less than
+* `lte`, `<=` - less or equal than
 
 Operators which are not available can be implemented as functions. For example, there is no modulus `%` operator but it is easy to implement a function `mod(a, b)`.
 
