@@ -1,5 +1,6 @@
 package mc.sel.function;
 
+import mc.sel.function.impl.ClassFunction;
 import mc.sel.function.impl.DateFunction;
 import mc.sel.function.impl.ListFunction;
 import mc.sel.function.impl.PowFunction;
@@ -22,6 +23,7 @@ public class FunctionsRegistry {
         registerFunction("pow", new PowFunction());
         registerFunction("date", new DateFunction());
         registerFunction("list", new ListFunction());
+        registerFunction("class", new ClassFunction());
     }
 
     private FunctionsRegistry() {}

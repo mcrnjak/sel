@@ -307,23 +307,48 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
     }
 
     private Method findMethod(Object invoker, String name, Class<?>[] argTypes) {
-        Method[] methods = invoker.getClass().getMethods();
+        Class<?> clazz = (invoker instanceof Class<?>) ? (Class<?>) invoker : invoker.getClass();
+        Method[] methods = clazz.getMethods();
         for (Method m : methods) {
             if (m.getName().equals(name) && m.getParameterTypes().length == argTypes.length) {
                 Class[] parameterTypes = m.getParameterTypes();
 
-                for (int i = 0; i < argTypes.length; i++) {
-                    // workaround for the problem with primitive type classes
-                    if (argTypes[i].isAssignableFrom(parameterTypes[i])) {
-                        return null;
-                    }
+                // workaround for the issue with lack of auto-boxing/unboxing of parameter types
+                if (typesAreCompatible(parameterTypes, argTypes)) {
+                    return m;
                 }
-
-                return m;
             }
         }
 
         return null;
+    }
+
+    private boolean typesAreCompatible(Class<?>[] parameterTypes, Class<?>[] argTypes) {
+        for (int i = 0; i < parameterTypes.length; i++) {
+            Class<?> parameterType = parameterTypes[i];
+            Class<?> argType = argTypes[i];
+
+            if (!translateFromPrimitive(parameterType).isAssignableFrom(argType)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private Class<?> translateFromPrimitive(Class<?> clazz) {
+        if (!clazz.isPrimitive()) return (clazz);
+
+        if (Boolean.TYPE.equals(clazz)) return (Boolean.class);
+        if (Character.TYPE.equals(clazz)) return (Character.class);
+        if (Byte.TYPE.equals(clazz)) return (Byte.class);
+        if (Short.TYPE.equals(clazz)) return (Short.class);
+        if (Integer.TYPE.equals(clazz)) return (Integer.class);
+        if (Long.TYPE.equals(clazz)) return (Long.class);
+        if (Float.TYPE.equals(clazz)) return (Float.class);
+        if (Double.TYPE.equals(clazz)) return (Double.class);
+
+        throw new RuntimeException( "Error translating type:" + clazz );
     }
 
     @Override

@@ -14,13 +14,16 @@ import mc.sel.token.Token;
 import mc.sel.tokenizer.RegexTokenizer;
 import mc.sel.tokenizer.Tokenizer;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 public class MainTest {
 
     public static void main(String[] args) {
-        String input = "pow(this.aaa.length() - 1, list(1,2).get(1)) * this.bbb - this.get('ccc').get(0) * 2";
-
+//        String input = "pow(this.aaa.length() - 1, list(1,2).get(1)) * this.bbb - this.get('ccc').get(0) * 2";
+        String input = "this.aaa + ' ' + class('mc.sel.util.StringUtils').join('|', list('1','2','3')) + '|' " +
+                "+ class('java.lang.Math').pow(2.0, pow(2,3)).intValue()";
         try {
             // tokenize the input
             Tokenizer tokenizer = new RegexTokenizer();
