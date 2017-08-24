@@ -1,6 +1,13 @@
 # SEL
 SEL stands for Simple Expression Language. It was created as an exercise of writing a parser and an interpreter for expressions. It is still a work in progress.
 
+* [Usage](#usage)
+* [Data Types](#data-types)
+* [Operators](#operators)
+* [Functions](#functions)
+* [Object Identifiers](#object-identifiers)
+* [Methods and Properties](#methods-and-properties)
+
 ## Usage
 ```java
 String input = "this.aaa + ' ' + class('mc.sel.util.StringUtils').join('|', list('1','2','3')) + ('|' + (this.ccc.get(1) - this.bbb - 1).intValue())";
@@ -52,7 +59,7 @@ The following operators are built into the language.
 * __and__ __&&__ boolean and. If left operand evaluates to `false` right operand is not evaluated.
 * __or__ __||__ boolean or. If left operand evaluates to `true` right operand is not evaluated.
 
-## Unary Operators
+### Unary Operators
 * __-__ minus (e.g. `-5`)
 * __!__ not (negates boolean operator, e.g. `!false`)
 
