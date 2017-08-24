@@ -52,6 +52,10 @@ The following operators are built into the language.
 * __and__ __&&__ boolean and. If left operand evaluates to `false` right operand is not evaluated.
 * __or__ __||__ boolean or. If left operand evaluates to `true` right operand is not evaluated.
 
+## Unary Operators
+* __-__ minus (e.g. `-5`)
+* __!__ not (negates boolean operator, e.g. `!false`)
+
 ### Equality Operators
 * __eq__ __==__ equal
 * __ne__ __!=__ not equal
