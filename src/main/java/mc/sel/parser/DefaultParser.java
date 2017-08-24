@@ -174,25 +174,34 @@ public class DefaultParser implements Parser {
      * @return corresponding parse tree node.
      */
     protected ParseTreeNode parsePrimary() {
+        ParseTreeNode node;
+
         if (match(STRING, DOUBLE, INT, TRUE, FALSE, NULL)) {
-            return new LiteralNode(currentToken());
-        }
-
-        if (match(LEFT_PAREN)) {
-            ParseTreeNode node = parseExpression();
+            node = new LiteralNode(currentToken());
+        } else if (match(LEFT_PAREN)) {
+            node = parseExpression();
             consumeOrThrow(RIGHT_PAREN, "Expected closing ')' for parentheses expression");
-            return new ParenthesesNode(node);
+            node = new ParenthesesNode(node);
+        } else if (match(ID)) {
+            node = parseCallable(null);
+        } else {
+            throw new ParserException("Unknown symbol detected", lookaheadToken());
         }
 
-        if (match(ID)) {
-            return parseCallable(null);
+        while (match(DOT)) {
+            if (match(ID)) {
+                node = parseCallable(node);
+            } else {
+                throw new ParserException("Expected identifier token", lookaheadToken());
+            }
         }
 
-        throw new ParserException("Unknown symbol detected", lookaheadToken());
+        return node;
+
     }
 
     /**
-     * Parses the 'function' rule from the grammar.
+     * Parses the 'callable' rule from the grammar.
      *
      * @return corresponding parse tree node.
      */
@@ -204,14 +213,6 @@ public class DefaultParser implements Parser {
             List<ParseTreeNode> funcArgs = parseArgs();
             node = new FunctionNode(invoker, identifier, funcArgs);
             consumeOrThrow(RIGHT_PAREN, "Closing ')' expected for function");
-        }
-
-        if (match(DOT)) {
-            if (match(ID)) {
-                node = parseCallable(node);
-            } else {
-                throw new ParserException("Expected identifier token", lookaheadToken());
-            }
         }
 
         return node;

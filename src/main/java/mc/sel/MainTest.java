@@ -17,9 +17,10 @@ import mc.sel.tokenizer.Tokenizer;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MainTest {
 
@@ -29,7 +30,7 @@ public class MainTest {
 //                "+ class('java.lang.Math').pow(2.0, pow(2,3)).intValue()";
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
-            String input = null;
+            String input;
             while (!(input = br.readLine()).equalsIgnoreCase("q")) {
 
                 try {
