@@ -249,7 +249,7 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
         if (tokenType == TokenType.STRING) {
             String seq = node.getToken().getSequence();
             // remove the first and last quote
-            return seq.substring(1, seq.length() - 1);
+            return seq.substring(1, seq.length() - 1).replace("\\'", "'");
         }
 
         throw new ParseTreeVisitorException("Unknown literal node type", node);
