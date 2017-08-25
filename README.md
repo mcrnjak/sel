@@ -77,6 +77,15 @@ Comparison operators work with numbers, strings and dates.
 
 Operators which are not available can be implemented as functions. For example, there is no modulus `%` operator but it is easy to implement a function `mod(a, b)`.
 
+### Index Operator
+Index operator `[]` provides access to list or array elements by the specified index. Index expression must 
+evaluate to a number.
+
+```
+list(1,2,3)[2]
+this.list_attribute[1]
+``` 
+
 ## Functions
 SEL provides just a few built-in functions which serve more as an example of how functions can be created, but it is possible to implement and register new functions.
 
@@ -116,4 +125,5 @@ For example:
 (5 * 3).intValue()
 date().getTime()
 date().time
+this.attribute[0].toString()
 ```

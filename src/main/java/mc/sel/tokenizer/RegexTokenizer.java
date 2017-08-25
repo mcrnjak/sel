@@ -66,6 +66,8 @@ public class RegexTokenizer implements Tokenizer {
         addTokenDescription("/", TokenType.DIV);
         addTokenDescription("[(]", TokenType.LEFT_PAREN);
         addTokenDescription("[)]", TokenType.RIGHT_PAREN);
+        addTokenDescription("\\[", TokenType.LEFT_BRACKET);
+        addTokenDescription("\\]", TokenType.RIGHT_BRACKET);
         addTokenDescription("\\b(and)\\b|&&", TokenType.AND);
         addTokenDescription("\\b(or)\\b|\\|\\|", TokenType.OR);
         addTokenDescription("\\b(gte)\\b|>=", TokenType.GTE);

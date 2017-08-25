@@ -8,7 +8,7 @@ mulDiv          ->  unary ( (MUL | DIV) unary)* ;
 unary           ->  (NOT | MINUS)? primary ;
 primary         ->  (STRING | INT | DOUBLE | 'true' | 'false' | 'null' | '(' expression ')' | callable)
                      ('.' callable)*;
-callable        ->  ID ( '(' args? ')' )? ;
+callable        ->  ID ('(' args? ')')? ('[' addSub ']')?;
 args            ->  expression (',' expression)* ;
 
 OR              ->  ('or' | '||') ;

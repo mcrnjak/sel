@@ -215,6 +215,12 @@ public class DefaultParser implements Parser {
             consumeOrThrow(RIGHT_PAREN, "Closing ')' expected for function");
         }
 
+        if (match(LEFT_BRACKET)) {
+            ParseTreeNode index = parseAddSub();
+            node = new IndexedNode(node, index);
+            consumeOrThrow(RIGHT_BRACKET, "Closing ']' expected for index");
+        }
+
         return node;
     }
 

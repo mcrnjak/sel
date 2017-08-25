@@ -103,4 +103,12 @@ public interface ParseTreeVisitor<T> {
      * @throws ParseTreeVisitorException
      */
     T visitIdentifierNode(IdentifierNode node) throws ParseTreeVisitorException;
+
+    /**
+     * Visits the {@link IndexedNode} and does the work specific to that node.
+     * @param node node to perform the work on
+     * @return
+     * @throws ParseTreeVisitorException
+     */
+    T visitIndexedNode(IndexedNode node) throws  ParseTreeVisitorException;
 }

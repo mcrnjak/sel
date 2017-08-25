@@ -85,6 +85,11 @@ public class ParseTreeLispStringifier implements ParseTreeVisitor<String> {
         return "(get " + visit(node.getInvokerNode()) + " " + node.getToken().getSequence() + ")";
     }
 
+    @Override
+    public String visitIndexedNode(IndexedNode node) throws ParseTreeVisitorException {
+        return "(idx " + visit(node.getNode()) + " " + visit(node.getIndex()) + ")";
+    }
+
     private String visitBinaryNode(BinaryNode node) {
         return "(" + node.getOperator().getTokenType() + " " + visit(node.getLeftNode()) + " " + visit(node.getRightNode()) + ")";
     }

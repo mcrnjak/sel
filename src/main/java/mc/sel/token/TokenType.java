@@ -13,6 +13,8 @@ public enum TokenType {
     DIV,
     LEFT_PAREN,
     RIGHT_PAREN,
+    LEFT_BRACKET,
+    RIGHT_BRACKET,
     AND,
     OR,
     GT,

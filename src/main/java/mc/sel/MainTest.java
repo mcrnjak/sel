@@ -25,9 +25,6 @@ import java.util.Map;
 public class MainTest {
 
     public static void main(String[] args) throws IOException {
-//        String input = "pow(this.aaa.length() - 1, list(1,2).get(1)) * this.bbb - this.get('ccc').get(0) * 2";
-//        String input = "this.aaa + ' ' + class('mc.sel.util.StringUtils').join('|', list('1','2','3')) + '|' " +
-//                "+ class('java.lang.Math').pow(2.0, pow(2,3)).intValue()";
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
             String input;
@@ -42,9 +39,6 @@ public class MainTest {
                     Parser parser = new DefaultParser();
                     ParseTreeNode parseTree = parser.parse(tokens);
 
-                    // parse tree to string
-//                    System.out.println(parseTree);
-
                     // stringify as lisp structure
                     ParseTreeVisitor<String> stringifier = new ParseTreeLispStringifier();
                     System.out.println(stringifier.visit(parseTree));
@@ -57,6 +51,7 @@ public class MainTest {
                     list.add(5);
                     list.add(15);
                     obj.put("ccc", list);
+                    obj.put("ddd", new Object[] {"a", "b", "c"});
 
                     // interpret
                     ParseTreeVisitor<Object> interpreter = new ParseTreeInterpreter(new MapContextObject(obj));

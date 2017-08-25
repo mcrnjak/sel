@@ -405,6 +405,25 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
 
     }
 
+    @Override
+    public Object visitIndexedNode(IndexedNode node) throws ParseTreeVisitorException {
+        Object val = visit(node.getNode());
+        Object indexVal = visit(node.getIndex());
+
+        Integer index = castOrThrow(indexVal, Number.class,
+                new ParseTreeVisitorException("Index does not evaluate to number", node)).intValue();
+
+        if (val instanceof List) {
+            List<?> list = (List<?>) val;
+            return list.get(index);
+        } else if (val.getClass().isArray()) {
+            Object[] array = (Object[]) val;
+            return array[index];
+        } else {
+            throw new ParseTreeVisitorException("Cannot use index on non-indexable value", node);
+        }
+    }
+
     protected <T> T castOrThrow(Object val, Class<T> klass, RuntimeException e) {
         if (!klass.isAssignableFrom(val.getClass())) {
             throw e;
