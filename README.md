@@ -1,5 +1,5 @@
 # SEL
-SEL stands for Simple Expression Language. It was created as an exercise of writing a parser and an interpreter for expressions. It is still a work in progress.
+SEL stands for Simple Expression Language. It was created as an exercise of writing a parser and an interpreter for expressions.
 
 * [Usage](#usage)
 * [Data Types](#data-types)
@@ -10,7 +10,7 @@ SEL stands for Simple Expression Language. It was created as an exercise of writ
 
 ## Usage
 ```java
-String input = "this.aaa + ' ' + class('mc.sel.util.StringUtils').join('|', list('1','2','3')) + ('|' + (this.ccc.get(1) - this.bbb - 1).intValue())";
+String input = "this.greeting + ' from ' + class('mc.sel.util.StringUtils').join(' ', this.words)";
 
 // tokenize the input
 Tokenizer tokenizer = new RegexTokenizer();
@@ -20,22 +20,22 @@ List<Token> tokens = tokenizer.tokenize(input);
 Parser parser = new DefaultParser();
 ParseTreeNode parseTree = parser.parse(tokens);
 
-// stringify as lisp structure
+// stringify parse tree as LISP program
 ParseTreeVisitor<String> stringifier = new ParseTreeLispStringifier();
 System.out.println(stringifier.visit(parseTree));
 
 // context object
 Map<String, Object> obj = new HashMap<>();
-obj.put("aaa", "Hello");
-obj.put("bbb", 10);
-List<Integer> list = new ArrayList<>();
-list.add(5);
-list.add(15);
-obj.put("ccc", list);
+obj.put("greeting", "Hello");
+List<String> words = new ArrayList<>();
+words.add("Simple");
+words.add("Expression");
+words.add("Language");
+obj.put("words", words);
 
 // interpret
 ParseTreeVisitor<Object> interpreter = new ParseTreeInterpreter(new MapContextObject(obj));
-System.out.println(interpreter.visit(parseTree)); // outputs "Hello 1|2|3|4"
+System.out.println(interpreter.visit(parseTree)); // outputs "Hello from Simple Expression Language"
 ```
 
 ## Data Types
@@ -83,8 +83,17 @@ evaluate to a number.
 
 ```
 list(1,2,3)[2]
-this.list_attribute[1]
+this.keywords[1]
 ``` 
+
+### Assign Operator
+Assign operator `=` provides ability to assign a value to an object identifier property. Left hand side expression must
+be an object identifier property expression whereas right hand side can be any expression type except assignment expression.
+
+```
+this.objectName = this.objectName + ' ' + date().time
+this.priorities[0] = 5
+```
 
 ## Functions
 SEL provides just a few built-in functions which serve more as an example of how functions can be created, but it is possible to implement and register new functions.
@@ -100,20 +109,44 @@ FunctionsRegistry.registerFunction("class", new ClassFunction());
 ```
 
 ## Object Identifiers
-Object identifiers provide direct access to the context object. The only OOTB available identifier is `this` which returns the context object. Other identifiers can be implemented by implementing a `mc.sel.identifier.ObjectIdentifier` interface and need to be registered as
+Object identifiers provide direct access to the context object. The only OOTB available identifier is `this` which 
+returns the context object. Other identifiers can be created by implementing a `mc.sel.identifier.ObjectIdentifier` 
+interface and need to be registered with
 
 ```java
 ObjectsRegistry.registerObjectIdentifier("this", new ThisIdentifier());
 ```
 
-Object identifiers can be chained. For example, in a tree like object structure `parent` identifier can return a parent of the context object, whereas `parent.parent` can return a parent of a parent.
+Object identifiers can be chained. For example, in a tree like object structure `parent` identifier can return a parent 
+of the context object, whereas `parent.parent` can return a parent of a parent.
 
 It is possible to invoke methods and properties on identifiers.
 
 ```
-this.aaa
-this.get('aaa')
+this.objectName
+this.get('creationDate')
 ```
+
+### Context Object
+Context object is represented by the `mc.sel.identifier.context.ContextObject` interface.
+
+```java
+public interface ContextObject {
+    Object getProperty(String name);
+    Object getPropertyAtIndex(String name, int index);
+    void setProperty(String name, Object val);
+    void setPropertyAtIndex(String name, Object val, int index);
+    Object getObject();
+}
+``` 
+
+SEL comes with only one implementation of this interface which is `mc.sel.identifier.context.MapContextObject`. 
+This implementation wraps a `java.util.Map` object. It is possible to create other implementations such as
+_JavaBeansContextObject_ etc. 
+
+Note: when a method is invoked on an object identifier that method is invoked via reflection on the object which is 
+represented by the context object. On the other hand, when a property is invoked on an identifier, that call is delegated
+to the `getProperty` or `getPropertyAtIndex` method on the `ContextObject`.
 
 ## Methods and Properties
 It is possible to invoke a method or property on any expression. 
@@ -125,5 +158,5 @@ For example:
 (5 * 3).intValue()
 date().getTime()
 date().time
-this.attribute[0].toString()
+this.keywords[0].toString()
 ```
