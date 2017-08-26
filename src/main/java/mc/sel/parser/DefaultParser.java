@@ -48,7 +48,24 @@ public class DefaultParser implements Parser {
      * @return Parse tree root node.
      */
     protected ParseTreeNode parseExpression() {
-        return parseBoolOr();
+        return parseAssign();
+    }
+
+    /**
+     * Parses the 'assign' rule from the grammar.
+     *
+     * @return corresponding parse tree node.
+     */
+    protected ParseTreeNode parseAssign() {
+        ParseTreeNode node = parseBoolOr();
+
+        if (match(ASSIGN)) {
+            Token operator = currentToken();
+            ParseTreeNode rightNode = parseBoolOr();
+            return new AssignNode(node, rightNode, operator);
+        }
+
+        return node;
     }
 
     /**
@@ -179,7 +196,7 @@ public class DefaultParser implements Parser {
         if (match(STRING, DOUBLE, INT, TRUE, FALSE, NULL)) {
             node = new LiteralNode(currentToken());
         } else if (match(LEFT_PAREN)) {
-            node = parseExpression();
+            node = parseBoolOr();
             consumeOrThrow(RIGHT_PAREN, "Expected closing ')' for parentheses expression");
             node = new ParenthesesNode(node);
         } else if (match(ID)) {
@@ -233,11 +250,11 @@ public class DefaultParser implements Parser {
         List<ParseTreeNode> funcArgs = new LinkedList<>();
 
         if (lookaheadToken().getTokenType() != RIGHT_PAREN) {
-            ParseTreeNode arg = parseExpression();
+            ParseTreeNode arg = parseBoolOr();
             funcArgs.add(arg);
 
             while(match(ARGSEP)) {
-                arg = parseExpression();
+                arg = parseBoolOr();
                 funcArgs.add(arg);
             }
         }

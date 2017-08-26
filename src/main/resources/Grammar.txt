@@ -1,4 +1,5 @@
-expression      ->  boolOr;
+expression      ->  assign;
+assign          ->  boolOr ('=' boolOr)? ;
 boolOr          ->  boolAnd (OR boolAnd)* ;
 boolAnd         ->  equal (AND equal)* ;
 equal           ->  compare ( (EQ | NE) compare)* ;
@@ -6,10 +7,10 @@ compare         ->  addSub ( (GT | GTE | LT | LTE) addSub)* ;
 addSub          ->  mulDiv ( (PLUS | MINUS) mulDiv)* ;
 mulDiv          ->  unary ( (MUL | DIV) unary)* ;
 unary           ->  (NOT | MINUS)? primary ;
-primary         ->  (STRING | INT | DOUBLE | 'true' | 'false' | 'null' | '(' expression ')' | callable)
+primary         ->  (STRING | INT | DOUBLE | 'true' | 'false' | 'null' | '(' boolOr ')' | callable)
                      ('.' callable)*;
 callable        ->  ID ('(' args? ')')? ('[' addSub ']')?;
-args            ->  expression (',' expression)* ;
+args            ->  boolOr (',' boolOr)* ;
 
 OR              ->  ('or' | '||') ;
 AND             ->  ('and' | '&&') ;

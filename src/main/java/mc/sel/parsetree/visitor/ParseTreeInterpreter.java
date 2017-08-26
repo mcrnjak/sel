@@ -424,6 +424,52 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
         }
     }
 
+    @Override
+    public Object visitAssignNode(AssignNode node) throws ParseTreeVisitorException {
+        ParseTreeNode objNode = null;
+        Integer index = null;
+
+        if (node.getLeftNode() instanceof IndexedNode) {
+            IndexedNode indexedNode = (IndexedNode) node.getLeftNode();
+            objNode = indexedNode.getNode();
+            Object indexVal = visit(indexedNode.getIndex());
+            index = castOrThrow(indexVal, Number.class,
+                    new ParseTreeVisitorException("Index does not evaluate to number", node)).intValue();
+        } else {
+            objNode = node.getLeftNode();
+        }
+
+        if (objNode instanceof IdentifierNode) {
+            IdentifierNode identifierNode = (IdentifierNode) objNode;
+            objNode = identifierNode.getInvokerNode();
+            String property = identifierNode.getToken().getSequence();
+
+            if (objNode == null) {
+                throw new ParseTreeVisitorException("Assignment is allowed for object identifier properties only", node);
+            }
+
+            Object obj = visit(objNode);
+
+            if (obj instanceof ContextObject) {
+                ContextObject contextObject = (ContextObject) obj;
+                Object value = visit(node.getRightNode());
+
+                if (index != null) {
+                    contextObject.setPropertyAtIndex(property, value, index);
+                } else {
+                    contextObject.setProperty(property, value);
+                }
+
+                return value;
+            } else {
+                throw new ParseTreeVisitorException("Identifier does not evaluate to a context object", node);
+            }
+
+        } else {
+            throw new ParseTreeVisitorException("Assignment is allowed for object identifier properties only", node);
+        }
+    }
+
     protected <T> T castOrThrow(Object val, Class<T> klass, RuntimeException e) {
         if (!klass.isAssignableFrom(val.getClass())) {
             throw e;

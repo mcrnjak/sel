@@ -33,6 +33,7 @@ public enum TokenType {
     ARGSEP,
     ID,
     DOT,
+    ASSIGN,
     END
 
 }

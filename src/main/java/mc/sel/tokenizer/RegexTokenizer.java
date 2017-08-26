@@ -86,6 +86,7 @@ public class RegexTokenizer implements Tokenizer {
         addTokenDescription("[a-zA-Z][a-zA-Z0-9_]+", TokenType.ID);
         addTokenDescription("\\.", TokenType.DOT);
         addTokenDescription(",", TokenType.ARGSEP);
+        addTokenDescription("=", TokenType.ASSIGN);
     }
 
     private void addTokenDescription(String regex, TokenType tokenType) {

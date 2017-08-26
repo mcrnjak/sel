@@ -17,14 +17,20 @@ import mc.sel.tokenizer.Tokenizer;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MainTest {
 
     public static void main(String[] args) throws IOException {
+
+        // context object
+        Map<String, Object> obj = new HashMap<>();
+        obj.put("greeting", "Hello");
+        List<String> words = new ArrayList<>();
+        words.add("Simple");
+        words.add("Expression");
+        words.add("Language");
+        obj.put("words", words);
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
             String input;
@@ -42,16 +48,6 @@ public class MainTest {
                     // stringify as lisp structure
                     ParseTreeVisitor<String> stringifier = new ParseTreeLispStringifier();
                     System.out.println(stringifier.visit(parseTree));
-
-                    // context object
-                    Map<String, Object> obj = new HashMap<>();
-                    obj.put("aaa", "Hello");
-                    obj.put("bbb", 10);
-                    List<Integer> list = new ArrayList<>();
-                    list.add(5);
-                    list.add(15);
-                    obj.put("ccc", list);
-                    obj.put("ddd", new Object[] {"a", "b", "c"});
 
                     // interpret
                     ParseTreeVisitor<Object> interpreter = new ParseTreeInterpreter(new MapContextObject(obj));
