@@ -5,15 +5,13 @@ package mc.sel.identifier.context;
  *
  * @author Milan Crnjak
  */
-public class Context {
+public interface Context {
 
-    private ContextObject contextObject;
+    public ContextObject getContextObject();
 
-    public ContextObject getContextObject() {
-        return contextObject;
-    }
+    public void setContextObject(ContextObject contextObject);
 
-    public void setContextObject(ContextObject contextObject) {
-        this.contextObject = contextObject;
-    }
+    Object getProperty(String name);
+
+    void setProperty(String name, Object property);
 }

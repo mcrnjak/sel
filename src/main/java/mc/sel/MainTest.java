@@ -3,7 +3,9 @@ package mc.sel;
 import mc.sel.exception.ParseTreeVisitorException;
 import mc.sel.exception.ParserException;
 import mc.sel.exception.TokenizerException;
+import mc.sel.identifier.context.Context;
 import mc.sel.identifier.context.MapContextObject;
+import mc.sel.identifier.context.DefaultContextImpl;
 import mc.sel.parser.DefaultParser;
 import mc.sel.parser.Parser;
 import mc.sel.parsetree.ParseTreeNode;
@@ -32,6 +34,9 @@ public class MainTest {
         words.add("Language");
         obj.put("words", words);
 
+        Context ctx = new DefaultContextImpl();
+        ctx.setContextObject(new MapContextObject(obj));
+
         try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
             String input;
             while (!(input = br.readLine()).equalsIgnoreCase("q")) {
@@ -50,7 +55,7 @@ public class MainTest {
                     System.out.println(stringifier.visit(parseTree));
 
                     // interpret
-                    ParseTreeVisitor<Object> interpreter = new ParseTreeInterpreter(new MapContextObject(obj));
+                    ParseTreeVisitor<Object> interpreter = new ParseTreeInterpreter(ctx);
                     System.out.println(interpreter.visit(parseTree));
 
                 } catch (TokenizerException e) {

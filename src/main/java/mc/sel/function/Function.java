@@ -1,5 +1,7 @@
 package mc.sel.function;
 
+import mc.sel.identifier.context.Context;
+
 import java.util.List;
 
 /**
@@ -12,9 +14,10 @@ public interface Function {
     /**
      * Executes functions logic.
      *
+     * @param context expression context
      * @param args function arguments.
      *
      * @return Function result.
      */
-    Object execute(List<Object> args);
+    Object execute(Context context, List<Object> args);
 }

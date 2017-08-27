@@ -1,6 +1,7 @@
 package mc.sel.function.impl;
 
 import mc.sel.function.Function;
+import mc.sel.identifier.context.Context;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
 public class PowFunction implements Function {
 
     @Override
-    public Object execute(List<Object> args) {
+    public Object execute(Context context, List<Object> args) {
         if (args == null || args.size() != 2) {
             throw new IllegalArgumentException("Pow function requires two arguments");
         }

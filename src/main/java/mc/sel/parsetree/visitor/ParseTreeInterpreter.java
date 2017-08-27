@@ -27,10 +27,10 @@ import java.util.List;
  */
 public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
 
-    private ContextObject contextObject;
+    private Context context;
 
-    public ParseTreeInterpreter(ContextObject contextObject) {
-        this.contextObject = contextObject;
+    public ParseTreeInterpreter(Context context) {
+        this.context = context;
     }
 
     @Override
@@ -284,7 +284,7 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
             }
 
             try {
-                return func.execute(args);
+                return func.execute(context, args);
             } catch(RuntimeException e) {
                 throw new ParseTreeVisitorException("Error while executing function", e, node);
             }
@@ -297,14 +297,14 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
         }
 
         try {
-            return invoke(invoker, name, args);
+            return invokeMethod(invoker, name, args);
         } catch (Exception e) {
             throw new ParseTreeVisitorException("Error while executing method", e, node);
         }
 
     }
 
-    private Object invoke(Object invoker, String name, List<Object> args) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    protected Object invokeMethod(Object invoker, String name, List<Object> args) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Class<?>[] argTypes = new Class[args.size()];
         for (int i = 0; i < args.size(); i++) {
             argTypes[i] = args.get(i).getClass();
@@ -318,7 +318,7 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
         }
     }
 
-    private Method findMethod(Object invoker, String name, Class<?>[] argTypes) {
+    protected Method findMethod(Object invoker, String name, Class<?>[] argTypes) {
         Class<?> clazz = (invoker instanceof Class<?>) ? (Class<?>) invoker : invoker.getClass();
         Method[] methods = clazz.getMethods();
         for (Method m : methods) {
@@ -335,7 +335,7 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
         return null;
     }
 
-    private boolean typesAreCompatible(Class<?>[] parameterTypes, Class<?>[] argTypes) {
+    protected boolean typesAreCompatible(Class<?>[] parameterTypes, Class<?>[] argTypes) {
         for (int i = 0; i < parameterTypes.length; i++) {
             Class<?> parameterType = parameterTypes[i];
             Class<?> argType = argTypes[i];
@@ -348,7 +348,7 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
         return true;
     }
 
-    private Class<?> translateFromPrimitive(Class<?> clazz) {
+    protected Class<?> translateFromPrimitive(Class<?> clazz) {
         if (!clazz.isPrimitive()) return (clazz);
 
         if (Boolean.TYPE.equals(clazz)) return (Boolean.class);
@@ -374,11 +374,8 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
             invoker = visit(node.getInvokerNode());
         }
 
-        Context ctx = new Context();
-        ctx.setContextObject(contextObject);
-
         if (objIdentifier != null) {
-            return objIdentifier.execute(ctx);
+            return objIdentifier.execute(context);
         } else {
             // it's a property access
             if (invoker == null) {

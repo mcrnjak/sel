@@ -1,6 +1,7 @@
 package mc.sel.function.impl;
 
 import mc.sel.function.Function;
+import mc.sel.identifier.context.Context;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ import java.util.List;
 public class ClassFunction implements Function {
 
     @Override
-    public Object execute(List<Object> args) {
+    public Object execute(Context context, List<Object> args) {
         try {
             return Class.forName((String) args.get(0));
         } catch (ClassNotFoundException e) {

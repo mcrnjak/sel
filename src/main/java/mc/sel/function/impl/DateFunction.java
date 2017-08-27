@@ -1,6 +1,8 @@
 package mc.sel.function.impl;
 
 import mc.sel.function.Function;
+import mc.sel.identifier.context.Context;
+import org.omg.CORBA.ContextList;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,7 +17,7 @@ import java.util.List;
 public class DateFunction implements Function {
 
     @Override
-    public Object execute(List<Object> args) {
+    public Object execute(Context context, List<Object> args) {
         if (args == null || args.size() == 0) {
             return new Date();
         }
