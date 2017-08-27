@@ -13,6 +13,7 @@ import mc.sel.token.TokenType;
 
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -388,6 +389,13 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
             }
 
             try {
+                if (invoker instanceof Class) {
+                    Field f = ((Class<?>) invoker).getField(name);
+                    if (f != null) {
+                        return f.get(null);
+                    }
+                }
+
                 for (PropertyDescriptor pd : Introspector.getBeanInfo(invoker.getClass()).getPropertyDescriptors()) {
                     if (pd.getName().equals(name) && pd.getReadMethod() != null) {
                         return pd.getReadMethod().invoke(invoker);
