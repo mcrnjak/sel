@@ -12,17 +12,13 @@ SEL stands for Simple Expression Language. It was created as an exercise of writ
 ```java
 String input = "this.greeting + ' from ' + class('mc.sel.util.StringUtils').join(' ', this.words)";
 
-// tokenize the input
+// tokenize input
 Tokenizer tokenizer = new RegexTokenizer();
 List<Token> tokens = tokenizer.tokenize(input);
 
-// parse the tokens
+// parse tokens
 Parser parser = new DefaultParser();
 ParseTreeNode parseTree = parser.parse(tokens);
-
-// stringify parse tree as LISP program
-ParseTreeVisitor<String> stringifier = new ParseTreeLispStringifier();
-System.out.println(stringifier.visit(parseTree));
 
 // context object
 Map<String, Object> obj = new HashMap<>();
@@ -33,8 +29,12 @@ words.add("Expression");
 words.add("Language");
 obj.put("words", words);
 
+// expression context
+Context ctx = new DefaultContextImpl();
+ctx.setContextObject(new MapContextObject(obj));
+
 // interpret
-ParseTreeVisitor<Object> interpreter = new ParseTreeInterpreter(new MapContextObject(obj));
+ParseTreeVisitor<Object> interpreter = new ParseTreeInterpreter(ctx);
 System.out.println(interpreter.visit(parseTree)); // outputs "Hello from Simple Expression Language"
 ```
 
@@ -44,38 +44,43 @@ SEL supports the following data types:
 * __Double__ e.g. `3.0`
 * __Boolean__ `true`, `false`
 * __Null__ `null`
-* __String__ sequence of characters inside of single quotes, e.g. `'This is a string'`. Single quotes can be escaped with `\` character, e.g. `'Single \' inside'`.
+* __String__ sequence of characters inside of single quotes, e.g. `'This is a string'`. Single quotes can be escaped 
+with `\` character, e.g. `'Single \' inside'`.
 
 ## Operators
 The following operators are built into the language.
 
 ### Mathematical Operators
-* `+` - Adds numbers or cancatenates strings
-* `-` - Subracts numbers
-* `*` - Multiplies numbers
-* `/` - Divides numbers
+* `+` Add numbers.
+* `-` Subtract numbers.
+* `*` Multiply numbers.
+* `/` Divide numbers.
+
+### String Operators
+* `+` Concatenate strings.
 
 ### Boolean Operators
-* `and`, `&&` - boolean and. If left operand evaluates to `false` right operand is not evaluated.
-* `or`, `||` - boolean or. If left operand evaluates to `true` right operand is not evaluated.
+* `and`, `&&` Boolean _and_. If left operand evaluates to `false` right operand is not evaluated.
+* `or`, `||` Boolean _or_. If left operand evaluates to `true` right operand is not evaluated.
 
 ### Unary Operators
-* `-` - minus (e.g. `-5`)
-* `!` - not (negates a boolean operand, e.g. `!false`)
+* `-` Minus (e.g. `-5`).
+* `!` Not (negates a boolean operand, e.g. `!false`).
 
 ### Equality Operators
-* `eq`, `==` - equal
-* `ne`, `!=` - not equal
+* `eq`, `==` Equal.
+* `ne`, `!=` Not equal.
 
 ### Comparison Operators
 Comparison operators work with numbers, strings and dates.
 
-* `gt`, `>` - greater than
-* `gte`, `>=` - greater or equal than
-* `lt`, `<` - less than
-* `lte`, `<=` - less or equal than
+* `gt`, `>` Greater than.
+* `gte`, `>=` Greater than or equal to.
+* `lt`, `<` Less than.
+* `lte`, `<=` Less than or equal to.
 
-Operators which are not available can be implemented as functions. For example, there is no modulus `%` operator but it is easy to implement a function `mod(a, b)`.
+Operators which are not available can be implemented as functions. For example, there is no modulus `%` operator but 
+it is easy to implement a function `mod(a, b)`.
 
 ### Index Operator
 Index operator `[]` provides access to list or array elements by the specified index. Index expression must 
@@ -96,11 +101,15 @@ this.priorities[0] = 5
 ```
 
 ## Functions
-SEL provides just a few built-in functions which serve more as an example of how functions can be created, but it is possible to implement and register new functions.
+SEL provides just a few built-in functions which serve more as an example of how functions can be created, but it is 
+possible to implement and register new functions.
 
-* __date__ Creates a `java.util.Date` instance. If called without arguments as `date()` returns the current time. It can also be used to construct a specific date `date('24.08.2017 10:30', 'dd.MM.yyyy hh:mm')`.
-* __list__ Creates a list of elements (arguments). E.g. `list()` returns an empty list, whereas `list(1, "two", 3)` returns a list with 3 elemens.
-* __class__ Creates a `java.lang.Class` object. This function is useful for invoking static methods. E.g. `class('java.lang.Math').pow(2.0, 3.0)`.
+* __date__ Creates a `java.util.Date` instance. If called without arguments as `date()` returns the current time. It can 
+also be used to construct a specific date `date('24.08.2017 10:30', 'dd.MM.yyyy hh:mm')`.
+* __list__ Creates a list of elements (arguments). E.g. `list()` returns an empty list, whereas `list(1, "two", 3)` 
+returns a list with 3 elemens.
+* __class__ Creates a `java.lang.Class` object. This function is useful for invoking static methods. 
+E.g. `class('java.lang.Math').pow(2.0, 3.0)`.
 
 SEL functions implement `mc.sel.function.Function` interface. Custom functions should be added to the global functions registry.
 
