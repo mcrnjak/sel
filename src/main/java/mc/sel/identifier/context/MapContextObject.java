@@ -1,5 +1,6 @@
 package mc.sel.identifier.context;
 
+import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +31,7 @@ public class MapContextObject implements ContextObject {
             List<?> list = (List<?>) propVal;
             return list.get(index);
         } else if (propVal.getClass().isArray()) {
-            Object[] array = (Object[]) propVal;
-            return array[index];
+            return Array.get(propVal, index);
         } else {
             String msg = String.format("Property '%s' is not a list or array", name);
             throw new RuntimeException(msg);
@@ -51,8 +51,7 @@ public class MapContextObject implements ContextObject {
             List<? super Object> list = (List<? super Object>) propVal;
             list.set(index, val);
         } else if (propVal.getClass().isArray()) {
-            Object[] array = (Object[]) propVal;
-            array[index] = val;
+            Array.set(propVal, index, val);
         } else {
             String msg = String.format("Property '%s' is not a list or array", name);
             throw new RuntimeException(msg);
