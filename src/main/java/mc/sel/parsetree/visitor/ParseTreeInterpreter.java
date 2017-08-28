@@ -13,6 +13,7 @@ import mc.sel.token.TokenType;
 
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -328,6 +329,14 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
 
                 // workaround for the issue with lack of auto-boxing/unboxing of parameter types
                 if (typesAreCompatible(parameterTypes, argTypes)) {
+
+                    /*
+                     * fix for a problem with accessing public methods on inner non-public classes
+                     * e.g. Arrays.asList() returns inner non-public implementation of List so calling a method
+                     * such as List.get(int) throws error
+                     */
+                    m.setAccessible(true);
+
                     return m;
                 }
             }
@@ -361,7 +370,7 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
         if (Float.TYPE.equals(clazz)) return (Float.class);
         if (Double.TYPE.equals(clazz)) return (Double.class);
 
-        throw new RuntimeException( "Error translating type:" + clazz );
+        throw new RuntimeException("Error translating type:" + clazz);
     }
 
     @Override
@@ -369,45 +378,46 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
         String name = node.getToken().getSequence();
 
         ObjectIdentifier objIdentifier = ObjectsRegistry.getObjectIdentifier(name);
-        Object invoker = null;
-
-        if (node.getInvokerNode() != null) {
-            invoker = visit(node.getInvokerNode());
-        }
 
         if (objIdentifier != null) {
             return objIdentifier.execute(context);
-        } else {
-            // it's a property access
-            if (invoker == null) {
-                throw new NullPointerException();
+        } else { // property access
+            Object invoker = null;
+
+            if (node.getInvokerNode() != null) {
+                invoker = visit(node.getInvokerNode());
             }
+            return getProperty(invoker, name, node);
+        }
+    }
 
-            if (invoker instanceof ContextObject) {
-                ContextObject obj = (ContextObject) invoker;
-                return obj.getProperty(name);
-            }
-
-            try {
-                if (invoker instanceof Class) {
-                    Field f = ((Class<?>) invoker).getField(name);
-                    if (f != null) {
-                        return f.get(null);
-                    }
-                }
-
-                for (PropertyDescriptor pd : Introspector.getBeanInfo(invoker.getClass()).getPropertyDescriptors()) {
-                    if (pd.getName().equals(name) && pd.getReadMethod() != null) {
-                        return pd.getReadMethod().invoke(invoker);
-                    }
-                }
-            } catch (Exception e) {
-                throw new ParseTreeVisitorException("Error while accessing property", node);
-            }
-
-            throw new ParseTreeVisitorException("Cannot resolve identifier", node);
+    protected Object getProperty(Object invoker, String name, IdentifierNode node) {
+        if (invoker == null) {
+            throw new NullPointerException();
         }
 
+        if (invoker instanceof ContextObject) {
+            ContextObject obj = (ContextObject) invoker;
+            return obj.getProperty(name);
+        }
+
+        // try reflection
+        try {
+            Class<?> clazz = (invoker instanceof Class<?>) ? (Class<?>) invoker : invoker.getClass();
+
+            // if java bean property
+            for (PropertyDescriptor pd : Introspector.getBeanInfo(clazz).getPropertyDescriptors()) {
+                if (pd.getName().equals(name) && pd.getReadMethod() != null) {
+                    return pd.getReadMethod().invoke(invoker);
+                }
+            }
+
+            // if public (static) field
+            Field f = clazz.getField(name);
+            return f.get(null);
+        } catch (Exception e) {
+            throw new ParseTreeVisitorException("Error while accessing property", e, node);
+        }
     }
 
     @Override
@@ -422,8 +432,7 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
             List<?> list = (List<?>) val;
             return list.get(index);
         } else if (val.getClass().isArray()) {
-            Object[] array = (Object[]) val;
-            return array[index];
+            return Array.get(val, index);
         } else {
             throw new ParseTreeVisitorException("Cannot use index on non-indexable value", node);
         }

@@ -28,11 +28,7 @@ public class MainTest {
         // context object
         Map<String, Object> obj = new HashMap<>();
         obj.put("greeting", "Hello");
-        List<String> words = new ArrayList<>();
-        words.add("Simple");
-        words.add("Expression");
-        words.add("Language");
-        obj.put("words", words);
+        obj.put("words", Arrays.asList("Simple", "Expression", "Language"));
 
         Context ctx = new DefaultContextImpl();
         ctx.setContextObject(new MapContextObject(obj));
