@@ -30,8 +30,7 @@ public class MainTest {
         obj.put("greeting", "Hello");
         obj.put("words", Arrays.asList("Simple", "Expression", "Language"));
 
-        Context ctx = new DefaultContextImpl();
-        ctx.setContextObject(new MapContextObject(obj));
+        Context ctx = new DefaultContextImpl(new MapContextObject(obj));
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
             String input;

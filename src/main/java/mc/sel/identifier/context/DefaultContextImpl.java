@@ -10,8 +10,14 @@ import java.util.Map;
  */
 public class DefaultContextImpl implements  Context {
 
+    private final ContextObject rootContextObject;
     private ContextObject contextObject;
     private Map<String, Object> properties = new HashMap<>();
+
+    public DefaultContextImpl(ContextObject rootContextObject) {
+        this.rootContextObject = rootContextObject;
+        setContextObject(rootContextObject);
+    }
 
     @Override
     public ContextObject getContextObject() {
@@ -21,6 +27,11 @@ public class DefaultContextImpl implements  Context {
     @Override
     public void setContextObject(ContextObject contextObject) {
         this.contextObject = contextObject;
+    }
+
+    @Override
+    public ContextObject getRootContextObject() {
+        return rootContextObject;
     }
 
     @Override

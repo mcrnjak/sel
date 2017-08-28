@@ -7,9 +7,11 @@ package mc.sel.identifier.context;
  */
 public interface Context {
 
-    public ContextObject getContextObject();
+    ContextObject getContextObject();
 
-    public void setContextObject(ContextObject contextObject);
+    void setContextObject(ContextObject contextObject);
+
+    ContextObject getRootContextObject();
 
     Object getProperty(String name);
 

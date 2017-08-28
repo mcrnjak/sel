@@ -25,10 +25,10 @@ ParseTreeNode parseTree = parser.parse(tokens);
 Map<String, Object> obj = new HashMap<>();
 obj.put("greeting", "Hello");
 obj.put("words", Arrays.asList("Simple", "Expression", "Language"));
+ContextObject ctxObject = new MapContextObject(obj);
 
 // expression context
-Context ctx = new DefaultContextImpl();
-ctx.setContextObject(new MapContextObject(obj));
+Context ctx = new DefaultContextImpl(ctxObject);
 
 // interpret
 ParseTreeVisitor<Object> interpreter = new ParseTreeInterpreter(ctx);
