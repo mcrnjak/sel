@@ -83,7 +83,7 @@ public class RegexTokenizer implements Tokenizer {
         addTokenDescription("'((\\\\')|[^'])*?'", TokenType.STRING);
         addTokenDescription("[0-9]+\\.[0-9]+", TokenType.DOUBLE);
         addTokenDescription("[0-9]+", TokenType.INT);
-        addTokenDescription("[a-zA-Z][a-zA-Z0-9_]+", TokenType.ID);
+        addTokenDescription("[a-zA-Z][a-zA-Z0-9_]*", TokenType.ID);
         addTokenDescription("\\.", TokenType.DOT);
         addTokenDescription(",", TokenType.ARGSEP);
         addTokenDescription("=", TokenType.ASSIGN);
