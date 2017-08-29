@@ -378,8 +378,12 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
         String name = node.getToken().getSequence();
 
         ObjectIdentifier objIdentifier = ObjectsRegistry.getObjectIdentifier(name);
-
         if (objIdentifier != null) {
+            // execute previous identifiers in chain
+            if (node.getInvokerNode() != null) {
+                visit(node.getInvokerNode());
+            }
+            // then execute current identifier
             return objIdentifier.execute(context);
         } else { // property access
             Object invoker = null;
