@@ -14,17 +14,22 @@ import java.util.List;
 public class FunctionNode implements ParseTreeNode {
 
     private ParseTreeNode invokerNode;
-    private Token token;
+    private Token funcIdToken;
     private List<ParseTreeNode> funcArgs;
+    private Token openParenToken;
+    private Token closeParenToken;
 
-    public FunctionNode(ParseTreeNode invokerNode, Token token, List<ParseTreeNode> funcArgs) {
+    public FunctionNode(ParseTreeNode invokerNode, Token funcIdToken, Token openParenToken, List<ParseTreeNode> funcArgs,
+                        Token closeParenToken) {
         this.invokerNode = invokerNode;
-        this.token = token;
+        this.funcIdToken = funcIdToken;
+        this.openParenToken = openParenToken;
         this.funcArgs = funcArgs;
+        this.closeParenToken = closeParenToken;
     }
 
-    public Token getToken() {
-        return token;
+    public Token getFuncIdToken() {
+        return funcIdToken;
     }
 
     public List<ParseTreeNode> getFuncArgs() {
@@ -33,6 +38,14 @@ public class FunctionNode implements ParseTreeNode {
 
     public ParseTreeNode getInvokerNode() {
         return invokerNode;
+    }
+
+    public Token getOpenParenToken() {
+        return openParenToken;
+    }
+
+    public Token getCloseParenToken() {
+        return closeParenToken;
     }
 
     @Override
@@ -48,7 +61,7 @@ public class FunctionNode implements ParseTreeNode {
             sb.append(invokerNode.toString()).append(".");
         }
 
-        sb.append(getToken().getSequence()).append("(");
+        sb.append(getFuncIdToken().getSequence()).append("(");
 
         for (ParseTreeNode argNode : getFuncArgs()) {
             sb.append(argNode.toString()).append(",");

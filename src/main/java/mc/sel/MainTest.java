@@ -15,6 +15,7 @@ import mc.sel.parsetree.visitor.ParseTreeVisitor;
 import mc.sel.token.Token;
 import mc.sel.tokenizer.RegexTokenizer;
 import mc.sel.tokenizer.Tokenizer;
+import mc.sel.util.ExceptionUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -55,11 +56,14 @@ public class MainTest {
 
                 } catch (TokenizerException e) {
                     System.err.println("Error in input at position [" + e.getPosition() + "] " + e.getMessage());
+                    System.err.println(ExceptionUtils.underlineError(input, e));
                 } catch (ParserException e) {
                     System.err.println("Error in input at token [" +
                             e.getToken().getStartPos() + "," + e.getToken().getEndPos() + "] " + e.getMessage());
+                    System.err.println(ExceptionUtils.underlineError(input, e));
                 } catch (ParseTreeVisitorException e) {
                     System.err.println("Error in parse tree visitor.");
+                    System.err.println(ExceptionUtils.underlineError(input, e));
                     e.printStackTrace();
                 }
             }

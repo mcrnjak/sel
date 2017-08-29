@@ -22,7 +22,7 @@ public class DefaultParser implements Parser {
     private LinkedList<Token> tokens;
     private Token lookaheadToken;
     private Token currentToken;
-    private Token endToken = new Token(END, "", -1, -1);
+    private Token endToken;
 
     @Override
     public ParseTreeNode parse(List<Token> inputTokens) throws ParserException {
@@ -32,6 +32,9 @@ public class DefaultParser implements Parser {
 
         setTokens(new LinkedList<>(inputTokens));
         setLookaheadToken(getTokens().getFirst());
+
+        int endTokenPos = getTokens().getLast().getEndPos() + 1;
+        endToken = new Token(END, "", endTokenPos, endTokenPos);
 
         ParseTreeNode parseTree = parseExpression();
 
@@ -196,13 +199,16 @@ public class DefaultParser implements Parser {
         if (match(STRING, DOUBLE, INT, TRUE, FALSE, NULL)) {
             node = new LiteralNode(currentToken());
         } else if (match(LEFT_PAREN)) {
+            Token leftParen = currentToken();
             node = parseBoolOr();
-            consumeOrThrow(RIGHT_PAREN, "Expected closing ')' for parentheses expression");
-            node = new ParenthesesNode(node);
+            Token rightParen = consumeOrThrow(RIGHT_PAREN, "Expected closing ')' for parentheses expression");
+            node = new ParenthesesNode(leftParen, node, rightParen);
         } else if (match(ID)) {
             node = parseCallable(null);
+        } else if (lookaheadToken().getTokenType() == END) {
+            throw new ParserException("Unexpected end of expression", lookaheadToken());
         } else {
-            throw new ParserException("Unknown symbol detected", lookaheadToken());
+            throw new ParserException("Invalid expression detected", lookaheadToken());
         }
 
         while (match(DOT)) {
@@ -227,15 +233,17 @@ public class DefaultParser implements Parser {
         ParseTreeNode node = new IdentifierNode(invoker, identifier);
 
         if (match(LEFT_PAREN)) {
+            Token leftParen = currentToken();
             List<ParseTreeNode> funcArgs = parseArgs();
-            node = new FunctionNode(invoker, identifier, funcArgs);
-            consumeOrThrow(RIGHT_PAREN, "Closing ')' expected for function");
+            Token rightParen = consumeOrThrow(RIGHT_PAREN, "Closing ')' expected for function");
+            node = new FunctionNode(invoker, identifier, leftParen, funcArgs, rightParen);
         }
 
         if (match(LEFT_BRACKET)) {
+            Token leftBracket = currentToken();
             ParseTreeNode index = parseAddSub();
-            node = new IndexedNode(node, index);
-            consumeOrThrow(RIGHT_BRACKET, "Closing ']' expected for index");
+            Token rightBracket = consumeOrThrow(RIGHT_BRACKET, "Closing ']' expected for index");
+            node = new IndexedNode(node, leftBracket, index, rightBracket);
         }
 
         return node;

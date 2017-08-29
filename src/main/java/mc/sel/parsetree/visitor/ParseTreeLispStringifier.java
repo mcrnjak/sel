@@ -61,7 +61,7 @@ public class ParseTreeLispStringifier implements ParseTreeVisitor<String> {
     @Override
     public String visitFunctionNode(FunctionNode node) {
         StringBuilder sb = new StringBuilder();
-        sb.append("(").append(node.getToken().getSequence());
+        sb.append("(").append(node.getFuncIdToken().getSequence());
 
         if (node.getInvokerNode() != null) {
             sb.append(" ").append(visit(node.getInvokerNode()));

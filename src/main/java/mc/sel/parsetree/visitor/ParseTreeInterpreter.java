@@ -121,7 +121,7 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
 
             return compareDates(left, right, tokenType);
         } else {
-            String msg = String.format("Expected types for left operand are String, Double, Date. Actual type is %s",
+            String msg = String.format("Expected types for left operand are String, Number, Date. Actual type is %s",
                     leftVal.getClass().getName());
             throw new ParseTreeVisitorException(msg, node.getLeftNode());
         }
@@ -271,7 +271,7 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
 
     @Override
     public Object visitFunctionNode(FunctionNode node) {
-        String name = node.getToken().getSequence();
+        String name = node.getFuncIdToken().getSequence();
 
         List<Object> args = new ArrayList<>(node.getFuncArgs().size());
         for (ParseTreeNode arg : node.getFuncArgs()) {
@@ -386,18 +386,18 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
             // then execute current identifier
             return objIdentifier.execute(context);
         } else { // property access
-            Object invoker = null;
-
             if (node.getInvokerNode() != null) {
-                invoker = visit(node.getInvokerNode());
+                Object invoker = visit(node.getInvokerNode());
+                return getProperty(invoker, name, node);
             }
-            return getProperty(invoker, name, node);
+
+            throw new ParseTreeVisitorException("Invalid identifier node", node);
         }
     }
 
     protected Object getProperty(Object invoker, String name, IdentifierNode node) {
         if (invoker == null) {
-            throw new NullPointerException();
+            throw new ParseTreeVisitorException("Cannot access property on null object", node.getInvokerNode());
         }
 
         if (invoker instanceof ContextObject) {
@@ -420,7 +420,10 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
             Field f = clazz.getField(name);
             return f.get(null);
         } catch (Exception e) {
-            throw new ParseTreeVisitorException("Error while accessing property", e, node);
+            // wrap property token into parse tree node object to satisfy ParseTreeVisitorException constructor
+            // in order to properly indicate the token which is causing problems
+            ParseTreeNode markerNode = new IdentifierNode(null, node.getToken());
+            throw new ParseTreeVisitorException("Error while accessing property", e, markerNode);
         }
     }
 
@@ -430,7 +433,7 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
         Object indexVal = visit(node.getIndex());
 
         Integer index = castOrThrow(indexVal, Number.class,
-                new ParseTreeVisitorException("Index does not evaluate to number", node)).intValue();
+                new ParseTreeVisitorException("Index does not evaluate to number", node.getIndex())).intValue();
 
         if (val instanceof List) {
             List<?> list = (List<?>) val;
@@ -438,7 +441,7 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
         } else if (val.getClass().isArray()) {
             return Array.get(val, index);
         } else {
-            throw new ParseTreeVisitorException("Cannot use index on non-indexable value", node);
+            throw new ParseTreeVisitorException("Cannot use index on non-indexable value", node.getNode());
         }
     }
 
@@ -452,7 +455,7 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
             objNode = indexedNode.getNode();
             Object indexVal = visit(indexedNode.getIndex());
             index = castOrThrow(indexVal, Number.class,
-                    new ParseTreeVisitorException("Index does not evaluate to number", node)).intValue();
+                    new ParseTreeVisitorException("Index does not evaluate to number", indexedNode.getIndex())).intValue();
         } else {
             objNode = node.getLeftNode();
         }
@@ -463,7 +466,7 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
             String property = identifierNode.getToken().getSequence();
 
             if (objNode == null) {
-                throw new ParseTreeVisitorException("Assignment is allowed for object identifier properties only", node);
+                throw new ParseTreeVisitorException("Assignment is allowed for object identifier properties only", node.getLeftNode());
             }
 
             Object obj = visit(objNode);
@@ -480,11 +483,11 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
 
                 return value;
             } else {
-                throw new ParseTreeVisitorException("Identifier does not evaluate to a context object", node);
+                throw new ParseTreeVisitorException("Identifier does not evaluate to a context object", node.getLeftNode());
             }
 
         } else {
-            throw new ParseTreeVisitorException("Assignment is allowed for object identifier properties only", node);
+            throw new ParseTreeVisitorException("Assignment is allowed for object identifier properties only", node.getLeftNode());
         }
     }
 
