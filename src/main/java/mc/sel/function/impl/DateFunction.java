@@ -2,7 +2,6 @@ package mc.sel.function.impl;
 
 import mc.sel.function.Function;
 import mc.sel.identifier.context.Context;
-import org.omg.CORBA.ContextList;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
