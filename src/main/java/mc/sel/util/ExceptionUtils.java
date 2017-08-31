@@ -128,13 +128,35 @@ public class ExceptionUtils {
         @Override
         public Position visitFunctionNode(FunctionNode node) throws ParseTreeVisitorException {
             int start = node.getFuncIdToken().getStartPos();
+
+            if (node.getInvokerNode() != null) {
+                start = visit(node.getInvokerNode()).start;
+            }
+
             int end = node.getCloseParenToken().getEndPos();
+
+            if (node.getIndexNode() != null) {
+                end = visit(node.getIndexNode()).end;
+            }
+
             return new Position(start, end);
         }
 
         @Override
         public Position visitIdentifierNode(IdentifierNode node) throws ParseTreeVisitorException {
-            return new Position(node.getToken().getStartPos(), node.getToken().getEndPos());
+            int start = node.getToken().getStartPos();
+
+            if (node.getInvokerNode() != null) {
+                start = visit(node.getInvokerNode()).start;
+            }
+
+            int end = node.getToken().getEndPos();
+
+            if (node.getIndexNode() != null) {
+                end = visit(node.getIndexNode()).end;
+            }
+
+            return new Position(start, end);
         }
 
         @Override
