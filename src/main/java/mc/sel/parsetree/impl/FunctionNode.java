@@ -1,5 +1,6 @@
 package mc.sel.parsetree.impl;
 
+import mc.sel.parsetree.IndexableNode;
 import mc.sel.parsetree.ParseTreeNode;
 import mc.sel.parsetree.visitor.ParseTreeVisitor;
 import mc.sel.token.Token;
@@ -11,13 +12,14 @@ import java.util.List;
  *
  * @author Milan Crnjak
  */
-public class FunctionNode implements ParseTreeNode {
+public class FunctionNode implements IndexableNode {
 
     private ParseTreeNode invokerNode;
     private Token funcIdToken;
     private List<ParseTreeNode> funcArgs;
     private Token openParenToken;
     private Token closeParenToken;
+    private IndexNode indexNode;
 
     public FunctionNode(ParseTreeNode invokerNode, Token funcIdToken, Token openParenToken, List<ParseTreeNode> funcArgs,
                         Token closeParenToken) {
@@ -74,6 +76,20 @@ public class FunctionNode implements ParseTreeNode {
 
         sb.append(")");
 
+        if (indexNode != null) {
+            sb.append(indexNode.toString());
+        }
+
         return sb.toString();
+    }
+
+    @Override
+    public IndexNode getIndexNode() {
+        return indexNode;
+    }
+
+    @Override
+    public void setIndexNode(IndexNode index) {
+        this.indexNode = index;
     }
 }

@@ -138,8 +138,8 @@ public class ExceptionUtils {
         }
 
         @Override
-        public Position visitIndexedNode(IndexedNode node) throws ParseTreeVisitorException {
-            int start = visit(node.getNode()).start;
+        public Position visitIndexNode(IndexNode node) throws ParseTreeVisitorException {
+            int start = node.getOpenBracketToken().getStartPos();
             int end = node.getCloseBracketToken().getEndPos();
             return new Position(start, end);
         }

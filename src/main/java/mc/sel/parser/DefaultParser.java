@@ -1,6 +1,7 @@
 package mc.sel.parser;
 
 import mc.sel.exception.ParserException;
+import mc.sel.parsetree.IndexableNode;
 import mc.sel.parsetree.ParseTreeNode;
 import mc.sel.parsetree.impl.*;
 import mc.sel.token.Token;
@@ -230,7 +231,7 @@ public class DefaultParser implements Parser {
      */
     protected ParseTreeNode parseCallable(ParseTreeNode invoker) {
         Token identifier = currentToken();
-        ParseTreeNode node = new IdentifierNode(invoker, identifier);
+        IndexableNode node = new IdentifierNode(invoker, identifier);
 
         if (match(LEFT_PAREN)) {
             Token leftParen = currentToken();
@@ -243,7 +244,7 @@ public class DefaultParser implements Parser {
             Token leftBracket = currentToken();
             ParseTreeNode index = parseAddSub();
             Token rightBracket = consumeOrThrow(RIGHT_BRACKET, "Closing ']' expected for index");
-            node = new IndexedNode(node, leftBracket, index, rightBracket);
+            node.setIndexNode(new IndexNode(leftBracket, index, rightBracket));
         }
 
         return node;

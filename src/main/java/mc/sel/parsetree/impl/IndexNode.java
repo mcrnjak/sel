@@ -9,22 +9,16 @@ import mc.sel.token.Token;
  *
  * @author Milan Crnjak
  */
-public class IndexedNode implements ParseTreeNode {
+public class IndexNode implements ParseTreeNode {
 
-    private ParseTreeNode node;
-    private ParseTreeNode index;
     private Token openBracketToken;
+    private ParseTreeNode index;
     private Token closeBracketToken;
 
-    public IndexedNode(ParseTreeNode node, Token openBracketToken, ParseTreeNode index, Token closeBracketToken) {
-        this.node = node;
+    public IndexNode(Token openBracketToken, ParseTreeNode index, Token closeBracketToken) {
         this.openBracketToken = openBracketToken;
         this.index = index;
         this.closeBracketToken = closeBracketToken;
-    }
-
-    public ParseTreeNode getNode() {
-        return node;
     }
 
     public ParseTreeNode getIndex() {
@@ -41,6 +35,11 @@ public class IndexedNode implements ParseTreeNode {
 
     @Override
     public <T> T accept(ParseTreeVisitor<T> visitor) {
-        return visitor.visitIndexedNode(this);
+        return visitor.visitIndexNode(this);
+    }
+
+    @Override
+    public String toString() {
+        return "[" + index.toString() + "]";
     }
 }

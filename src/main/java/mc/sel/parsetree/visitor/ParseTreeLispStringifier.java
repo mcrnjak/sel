@@ -73,21 +73,34 @@ public class ParseTreeLispStringifier implements ParseTreeVisitor<String> {
 
         sb.append(")");
 
+        if (node.getIndexNode() != null) {
+            String result = sb.toString();
+            return "(" + visit(node.getIndexNode()) + " " + result + ")";
+        }
+
         return sb.toString();
     }
 
     @Override
     public String visitIdentifierNode(IdentifierNode node) throws ParseTreeVisitorException {
+        String result;
+
         if (node.getInvokerNode() == null) {
-            return node.getToken().getSequence();
+            result = node.getToken().getSequence();
+        } else {
+            result = "(get " + visit(node.getInvokerNode()) + " " + node.getToken().getSequence() + ")";
         }
 
-        return "(get " + visit(node.getInvokerNode()) + " " + node.getToken().getSequence() + ")";
+        if (node.getIndexNode() != null) {
+            result = "(" + visit(node.getIndexNode()) + " " + result + ")";
+        }
+
+        return result;
     }
 
     @Override
-    public String visitIndexedNode(IndexedNode node) throws ParseTreeVisitorException {
-        return "(idx " + visit(node.getNode()) + " " + visit(node.getIndex()) + ")";
+    public String visitIndexNode(IndexNode node) throws ParseTreeVisitorException {
+        return "idx " + visit(node.getIndex());
     }
 
     @Override

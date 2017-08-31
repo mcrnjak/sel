@@ -1,5 +1,6 @@
 package mc.sel.parsetree.impl;
 
+import mc.sel.parsetree.IndexableNode;
 import mc.sel.parsetree.ParseTreeNode;
 import mc.sel.parsetree.visitor.ParseTreeVisitor;
 import mc.sel.token.Token;
@@ -9,10 +10,11 @@ import mc.sel.token.Token;
  *
  * @author Milan Crnjak
  */
-public class IdentifierNode implements ParseTreeNode {
+public class IdentifierNode implements IndexableNode {
 
     private ParseTreeNode invokerNode;
     private Token token;
+    private IndexNode indexNode;
 
     public IdentifierNode(ParseTreeNode invokerNode, Token token) {
         this.invokerNode = invokerNode;
@@ -42,6 +44,20 @@ public class IdentifierNode implements ParseTreeNode {
 
         sb.append(token.getSequence());
 
+        if (indexNode != null) {
+            sb.append(indexNode.toString());
+        }
+
         return sb.toString();
+    }
+
+    @Override
+    public IndexNode getIndexNode() {
+        return indexNode;
+    }
+
+    @Override
+    public void setIndexNode(IndexNode index) {
+        this.indexNode = index;
     }
 }
