@@ -135,7 +135,7 @@ public interface ObjectIdentifier {
 Custom identifiers need to be registered in the global identifiers registry.
 
 ```java
-ObjectsRegistry.registerObjectIdentifier("this", new ThisIdentifier());
+ObjectIdentifiersRegistry.registerObjectIdentifier("this", new ThisIdentifier());
 ```
 
 Object identifiers can be chained. For example, in a tree like object structure `parent` identifier can return a parent 
