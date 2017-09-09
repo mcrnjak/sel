@@ -8,11 +8,11 @@ import java.util.Map;
 
 /**
  * Object identifiers registry. All available identifiers are registered here. Custom defined identifiers
- * must be registered using {@link ObjectsRegistry#registerObjectIdentifier(String, ObjectIdentifier)} method.
+ * must be registered using {@link ObjectIdentifiersRegistry#registerObjectIdentifier(String, ObjectIdentifier)} method.
  *
  * @author Milan Crnjak
  */
-public class ObjectsRegistry {
+public final class ObjectIdentifiersRegistry {
 
     private static final Map<String, ObjectIdentifier> objectIdentifiers = new HashMap<>();
 
@@ -20,7 +20,7 @@ public class ObjectsRegistry {
         registerObjectIdentifier("this", new ThisIdentifier());
     }
 
-    private ObjectsRegistry() {}
+    private ObjectIdentifiersRegistry() {}
 
     /**
      * Registers an object identifier in the registry.

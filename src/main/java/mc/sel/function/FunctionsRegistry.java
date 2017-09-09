@@ -15,7 +15,7 @@ import java.util.Map;
  *
  * @author Milan Crnjak
  */
-public class FunctionsRegistry {
+public final class FunctionsRegistry {
 
     private static final Map<String, Function> functions = new HashMap<>();
 

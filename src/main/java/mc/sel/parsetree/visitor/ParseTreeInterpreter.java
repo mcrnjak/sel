@@ -4,7 +4,7 @@ import mc.sel.exception.ParseTreeVisitorException;
 import mc.sel.function.Function;
 import mc.sel.function.FunctionsRegistry;
 import mc.sel.identifier.ObjectIdentifier;
-import mc.sel.identifier.ObjectsRegistry;
+import mc.sel.identifier.ObjectIdentifiersRegistry;
 import mc.sel.identifier.context.Context;
 import mc.sel.identifier.context.ContextObject;
 import mc.sel.parsetree.ParseTreeNode;
@@ -407,7 +407,7 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
             index = visitIndexNode(node.getIndexNode());
         }
 
-        ObjectIdentifier objIdentifier = ObjectsRegistry.getObjectIdentifier(name);
+        ObjectIdentifier objIdentifier = ObjectIdentifiersRegistry.getObjectIdentifier(name);
         if (objIdentifier != null) {
             if (index != null) {
                 throw new ParseTreeVisitorException("Object identifiers do not support access by index", node);
