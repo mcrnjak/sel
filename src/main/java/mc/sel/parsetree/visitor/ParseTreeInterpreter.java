@@ -324,7 +324,9 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
         }
     }
 
-    protected Object invokeMethod(Object invoker, String name, List<Object> args) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    protected Object invokeMethod(Object invoker, String name, List<Object> args)
+            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+
         if (invoker instanceof ContextObject) {
             invoker = ((ContextObject) invoker).getObject();
         }
@@ -469,8 +471,6 @@ public class ParseTreeInterpreter implements ParseTreeVisitor<Object> {
 
     @Override
     public Object visitAssignNode(AssignNode node) throws ParseTreeVisitorException {
-        ParseTreeNode objNode = null;
-
         ParseTreeNode leftNode = node.getLeftNode();
 
         if (leftNode instanceof IdentifierNode) {
